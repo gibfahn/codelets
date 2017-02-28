@@ -8,7 +8,7 @@ pub fn puzzle(input: &str) -> i32 {
                                          .map(|line| line.parse().expect("Parse error"))
                                          //.inspect(|x| println!("finished parsing: {:?}", x))
                                          .collect();
-    let mut machine = Machine::new();
+    let mut machine = Machine::default();
     machine.execute(&program);
     machine.value_of(Register::A)
 }
@@ -75,7 +75,7 @@ impl FromStr for Register {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Machine {
     registers: [i32; 4],
     program: Vec<Instruction>,
@@ -83,14 +83,6 @@ pub struct Machine {
 }
 
 impl Machine {
-    pub fn new() -> Self {
-        Machine {
-            registers: [0; 4],
-            program: Vec::new(),
-            prog_count: 0,
-        }
-    }
-
     fn execute(&mut self, instructions: &[Instruction]) {
         self.program.extend_from_slice(instructions);
 
@@ -149,7 +141,7 @@ mod test {
 
     #[test]
     fn run_cpy() {
-        let mut machine = Machine::new();
+        let mut machine = Machine::default();
         machine.execute(&[Instruction::Copy(FromLocation::Integer(5), Register::A)]);
         assert_eq!(machine.value_of(Register::A), 5);
         machine.execute(
@@ -160,7 +152,7 @@ mod test {
 
     #[test]
     fn run_inc_dec() {
-        let mut machine = Machine::new();
+        let mut machine = Machine::default();
         machine.execute(&[Instruction::Decrement(Register::B)]);
         assert_eq!(machine.value_of(Register::B), -1);
 
@@ -171,7 +163,7 @@ mod test {
 
     #[test]
     fn run_jnz_jump_of_zero() {
-        let mut machine = Machine::new();
+        let mut machine = Machine::default();
         machine.execute(&[
                         Instruction::Increment(Register::A),
                         Instruction::Increment(Register::D),
@@ -183,7 +175,7 @@ mod test {
 
     #[test]
     fn run_jnz_zero_condition_jump() {
-        let mut machine = Machine::new();
+        let mut machine = Machine::default();
         machine.execute(&[
                         Instruction::Increment(Register::A),
                         Instruction::JumpNonZero(FromLocation::Register(Register::D), -1),
@@ -194,7 +186,7 @@ mod test {
 
     #[test]
     fn run_jnz_jump_zero() {
-        let mut machine = Machine::new();
+        let mut machine = Machine::default();
         machine.execute(&[
                         Instruction::Increment(Register::C),
                         Instruction::JumpNonZero(FromLocation::Register(Register::C), 0),
@@ -207,7 +199,7 @@ mod test {
 
     #[test]
     fn run_jnz_forward_jump_one() {
-        let mut machine = Machine::new();
+        let mut machine = Machine::default();
         machine.execute(&[
                         Instruction::Increment(Register::C),
                         Instruction::JumpNonZero(FromLocation::Register(Register::C), 1),
@@ -220,7 +212,7 @@ mod test {
 
     #[test]
     fn run_jnz_forward_jump_two() {
-        let mut machine = Machine::new();
+        let mut machine = Machine::default();
         machine.execute(&[
                         Instruction::Increment(Register::C),
                         Instruction::JumpNonZero(FromLocation::Register(Register::C), 2),
