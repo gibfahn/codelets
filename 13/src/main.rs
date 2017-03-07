@@ -6,7 +6,16 @@ use std::usize::MAX;
 
 const MAX_PATH: usize = MAX;
 
-//extern crate thirteen;
+fn main() {
+    let mut file = File::open("./input.txt")
+                         .expect("Could not open input.txt");
+    let mut input = String::new();
+    file.read_to_string(&mut input).expect("Could not read input.txt");
+
+    println!("Input: {}", input);
+    let maze = Maze::new(input.trim().parse().expect("Input isn't a number"));
+    println!("{}", maze.shortest_path(Point(1,1), Point(31, 39)));
+}
 
 pub struct Maze {
     num: usize,
@@ -63,17 +72,6 @@ impl Maze {
 
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub struct Point (usize, usize);
-
-fn main() {
-    let mut file = File::open("./input.txt")
-                         .expect("Could not open input.txt");
-    let mut input = String::new();
-    file.read_to_string(&mut input).expect("Could not read input.txt");
-
-    println!("Input: {}", input);
-    let maze = Maze::new(input.trim().parse().expect("Input isn't a number"));
-    println!("{}", maze.shortest_path(Point(1,1), Point(31, 39)));
-}
 
 
 #[test]
