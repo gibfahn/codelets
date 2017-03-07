@@ -9,7 +9,7 @@ fn main() {
     let mut input = String::new();
     file.read_to_string(&mut input).expect("Could not read input.txt");
 
-    let mut floor = Floor::new(&input, 40);
+    let mut floor = Floor::new(&input, 40_000);
     floor.fill();
     let answer = floor.count_safe();
 
