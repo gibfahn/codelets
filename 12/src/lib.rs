@@ -26,16 +26,32 @@ impl FromStr for Instruction {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut words = s.split_whitespace();
         match words.next() {
-            Some("cpy") => Ok(Instruction::Copy(
-                    words.next().ok_or("FromLocation not found")?.parse()?,
-                    words.next().ok_or("Register not found")?.parse()?)),
-            Some("inc") => Ok(Instruction::Increment(
-                    words.next().ok_or("Register not found")?.parse()?)),
-            Some("dec") => Ok(Instruction::Decrement(
-                    words.next().ok_or("Register not found")?.parse()?)),
-            Some("jnz") => Ok(Instruction::JumpNonZero(
-                    words.next().ok_or("Register not found")?.parse()?,
-                    words.next().ok_or("Offset not found")?.parse()?)),
+            Some("cpy") => {
+                Ok(Instruction::Copy(words.next()
+                                         .ok_or("FromLocation not found")?
+                                         .parse()?,
+                                     words.next()
+                                         .ok_or("Register not found")?
+                                         .parse()?))
+            }
+            Some("inc") => {
+                Ok(Instruction::Increment(words.next()
+                                              .ok_or("Register not found")?
+                                              .parse()?))
+            }
+            Some("dec") => {
+                Ok(Instruction::Decrement(words.next()
+                                              .ok_or("Register not found")?
+                                              .parse()?))
+            }
+            Some("jnz") => {
+                Ok(Instruction::JumpNonZero(words.next()
+                                                .ok_or("Register not found")?
+                                                .parse()?,
+                                            words.next()
+                                                .ok_or("Offset not found")?
+                                                .parse()?))
+            }
             Some(other) => Err(format!("Unknown instruction: {}", other).into()),
             None => Err("Instruction missing".into()),
         }
@@ -51,14 +67,16 @@ pub enum FromLocation {
 impl FromStr for FromLocation {
     type Err = Box<Error>;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        s.parse().map(FromLocation::Integer)
-            .or_else(|_| s.parse().map(FromLocation::Register))
+        s.parse().map(FromLocation::Integer).or_else(|_| s.parse().map(FromLocation::Register))
     }
 }
 
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub enum Register {
-    A,B,C,D,
+    A,
+    B,
+    C,
+    D,
 }
 
 impl FromStr for Register {
@@ -87,29 +105,31 @@ impl Machine {
         self.program.extend_from_slice(instructions);
 
         while self.prog_count < self.program.len() {
-            //println!("Machine: Program Count: {:?}, Registers: {:?}", self.prog_count, self.registers);
+            //println!("Machine: Program Count: {:?}, Registers: {:?}",
+            //         self.prog_count, self.registers);
             match self.program[self.prog_count] {
                 Instruction::Copy(FromLocation::Integer(from), to) => {
                     self.registers[Machine::register_index(to)] = from;
-                },
+                }
                 Instruction::Copy(FromLocation::Register(from), to) => {
-                    self.registers[Machine::register_index(to)] = self.registers[Machine::register_index(from)];
-                },
+                    self.registers[Machine::register_index(to)] = self.registers
+                        [Machine::register_index(from)];
+                }
                 Instruction::Increment(register) => {
                     self.registers[Machine::register_index(register)] += 1;
-                },
+                }
                 Instruction::Decrement(register) => {
                     self.registers[Machine::register_index(register)] -= 1;
-                },
+                }
                 Instruction::JumpNonZero(condition, offset) => {
                     let condition = match condition {
                         FromLocation::Integer(x) => x,
                         FromLocation::Register(x) => self.registers[Machine::register_index(x)],
                     };
                     if condition != 0 {
-                        self.prog_count = (self.prog_count as i32 + offset -1) as usize;
+                        self.prog_count = (self.prog_count as i32 + offset - 1) as usize;
                     }
-                },
+                }
             }
             self.prog_count += 1;
         }
@@ -144,9 +164,7 @@ mod test {
         let mut machine = Machine::default();
         machine.execute(&[Instruction::Copy(FromLocation::Integer(5), Register::A)]);
         assert_eq!(machine.value_of(Register::A), 5);
-        machine.execute(
-            &[Instruction::Copy(FromLocation::Register(Register::A), Register::D)]
-        );
+        machine.execute(&[Instruction::Copy(FromLocation::Register(Register::A), Register::D)]);
         assert_eq!(machine.value_of(Register::D), 5);
     }
 
@@ -164,35 +182,29 @@ mod test {
     #[test]
     fn run_jnz_jump_of_zero() {
         let mut machine = Machine::default();
-        machine.execute(&[
-                        Instruction::Increment(Register::A),
-                        Instruction::Increment(Register::D),
-                        Instruction::JumpNonZero(FromLocation::Register(Register::D), 0),
-                        Instruction::Increment(Register::A),
-        ]);
+        machine.execute(&[Instruction::Increment(Register::A),
+                          Instruction::Increment(Register::D),
+                          Instruction::JumpNonZero(FromLocation::Register(Register::D), 0),
+                          Instruction::Increment(Register::A)]);
         assert_eq!(machine.value_of(Register::A), 2);
     }
 
     #[test]
     fn run_jnz_zero_condition_jump() {
         let mut machine = Machine::default();
-        machine.execute(&[
-                        Instruction::Increment(Register::A),
-                        Instruction::JumpNonZero(FromLocation::Register(Register::D), -1),
-                        Instruction::Increment(Register::A),
-        ]);
+        machine.execute(&[Instruction::Increment(Register::A),
+                          Instruction::JumpNonZero(FromLocation::Register(Register::D), -1),
+                          Instruction::Increment(Register::A)]);
         assert_eq!(machine.value_of(Register::A), 2);
     }
 
     #[test]
     fn run_jnz_jump_zero() {
         let mut machine = Machine::default();
-        machine.execute(&[
-                        Instruction::Increment(Register::C),
-                        Instruction::JumpNonZero(FromLocation::Register(Register::C), 0),
-                        Instruction::Increment(Register::D),
-                        Instruction::Increment(Register::C),
-        ]);
+        machine.execute(&[Instruction::Increment(Register::C),
+                          Instruction::JumpNonZero(FromLocation::Register(Register::C), 0),
+                          Instruction::Increment(Register::D),
+                          Instruction::Increment(Register::C)]);
         assert_eq!(machine.value_of(Register::C), 2);
         assert_eq!(machine.value_of(Register::D), 1);
     }
@@ -200,12 +212,10 @@ mod test {
     #[test]
     fn run_jnz_forward_jump_one() {
         let mut machine = Machine::default();
-        machine.execute(&[
-                        Instruction::Increment(Register::C),
-                        Instruction::JumpNonZero(FromLocation::Register(Register::C), 1),
-                        Instruction::Increment(Register::D),
-                        Instruction::Increment(Register::C),
-        ]);
+        machine.execute(&[Instruction::Increment(Register::C),
+                          Instruction::JumpNonZero(FromLocation::Register(Register::C), 1),
+                          Instruction::Increment(Register::D),
+                          Instruction::Increment(Register::C)]);
         assert_eq!(machine.value_of(Register::C), 2);
         assert_eq!(machine.value_of(Register::D), 0);
     }
@@ -213,12 +223,10 @@ mod test {
     #[test]
     fn run_jnz_forward_jump_two() {
         let mut machine = Machine::default();
-        machine.execute(&[
-                        Instruction::Increment(Register::C),
-                        Instruction::JumpNonZero(FromLocation::Register(Register::C), 2),
-                        Instruction::Increment(Register::D),
-                        Instruction::Increment(Register::C),
-        ]);
+        machine.execute(&[Instruction::Increment(Register::C),
+                          Instruction::JumpNonZero(FromLocation::Register(Register::C), 2),
+                          Instruction::Increment(Register::D),
+                          Instruction::Increment(Register::C)]);
         assert_eq!(machine.value_of(Register::C), 1);
         assert_eq!(machine.value_of(Register::D), 0);
     }
