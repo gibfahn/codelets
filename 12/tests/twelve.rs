@@ -1,10 +1,8 @@
 extern crate twelve;
 use twelve::*;
 
-/*
- * Tests in tests/ are used for integration testing, they can't see your private functions.
- * Tests in lib.rs can, so they can be used for unit tests.
- */
+//! Tests in tests/ are used for integration testing, they can't see your private functions.
+//! Tests in lib.rs can, so they can be used for unit tests.
 
 #[test]
 fn basic() {
