@@ -2,13 +2,14 @@ use std::error::Error;
 use std::str::FromStr;
 use std::fs::File;
 use std::io::prelude::*;
+use std::fmt;
 
 fn main() {
     let mut file = File::open("./input").expect("Could not open input");
     let mut input = String::new();
     file.read_to_string(&mut input).expect("Could not read input file");
-    let first_puzzle = puzzle(&input);
-    println!("First output: {}", first_puzzle);
+    let puzzle = puzzle(&input);
+    println!("Second output: {}", puzzle);
 }
 
 pub fn puzzle(s: &str) -> String {
@@ -18,23 +19,13 @@ pub fn puzzle(s: &str) -> String {
         for c in line.chars() {
             key.execute(c.to_string().parse().expect("Bad puzzle input"));
         }
-        output += &key.to_int().to_string();
+        output += &format!("{}", key);
     }
     output
 }
 
 #[derive(Debug, PartialEq, Copy, Clone)]
-pub enum Key {
-    One,
-    Two,
-    Three,
-    Four,
-    Five,
-    Six,
-    Seven,
-    Eight,
-    Nine,
-}
+pub enum Key { One, Two, Three, Four, Five, Six, Seven, Eight, Nine, A, B, C, D }
 
 impl Key {
     pub fn execute(&mut self, instr: Instruction) {
@@ -58,39 +49,47 @@ impl Key {
             Seven => 7,
             Eight => 8,
             Nine => 9,
+            A => 10,
+            B => 11,
+            C => 12,
+            D => 13,
         }
     }
 
     pub fn move_up(&mut self) {
         let i = self.to_int();
         *self = match i {
-            4...9 => (i - 3).to_key(),
-            1...3 => (i).to_key(),
-            _ => panic!("Can't move_up that value"),
+            3 => 1.to_key(),
+            6...8 | 10...12 => (i - 4).to_key(),
+            13 => 11.to_key(),
+            _ if i < 14 => i.to_key(),
+            _ => panic!(format!("Can't move_up: {}", i)),
         }
     }
     pub fn move_down(&mut self) {
         let i = self.to_int();
         *self = match i {
-            1...6 => (i + 3).to_key(),
-            7...9 => (i).to_key(),
-            _ => panic!("Can't move_up that value"),
+            11 => 13.to_key(),
+            2...4 | 6...8 => (i + 4).to_key(),
+            1 => 3.to_key(),
+            _ if i < 14 => i.to_key(),
+            _ => panic!(format!("Can't move_down: {}", i)),
         }
     }
     pub fn move_left(&mut self) {
         let i = self.to_int();
         *self = match i {
-            2 | 3 | 5 | 6 | 8 | 9 => (i - 1).to_key(),
-            1 | 4 | 7 => (i).to_key(),
-            _ => panic!("Can't move_up that value"),
+            3 | 4 | 6...9 | 11 | 12 => (i - 1).to_key(),
+            _ if i < 14 => i.to_key(),
+            _ => panic!(format!("Can't move_left: {}", i)),
         }
     }
     pub fn move_right(&mut self) {
         let i = self.to_int();
         *self = match i {
-            1 | 2 | 4 | 5 | 7 | 8 => (i + 1).to_key(),
-            3 | 6 | 9 => (i).to_key(),
-            _ => panic!("Can't move_up that value"),
+            2 | 3 | 5...8 | 10 | 11 => (i + 1).to_key(),
+            _ if i < 14 => i.to_key(),
+            _ => panic!(format!("Can't move_right: {}", i)),
         }
     }
 }
@@ -101,6 +100,19 @@ impl Default for Key {
     }
 }
 
+impl fmt::Display for Key {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let output: char = match self.to_int() {
+            1...9 => self.to_int().to_string().chars().nth(0).unwrap(),
+            10 => 'A',
+            11 => 'B',
+            12 => 'C',
+            13 => 'D',
+            _ => panic!(format!("Can't display Key: {:?}", self)),
+        };
+        write!(f, "{}", output)
+    }
+}
 
 trait ToKey {
     fn to_key(&self) -> Key;
@@ -119,18 +131,17 @@ impl ToKey for i32 {
             7 => Seven,
             8 => Eight,
             9 => Nine,
+            10 => A,
+            11 => B,
+            12 => C,
+            13 => D,
             _ => panic!("Can't deInt that number"),
         }
     }
 }
 
 #[derive(Debug, PartialEq, Copy, Clone)]
-pub enum Instruction {
-    Up,
-    Down,
-    Left,
-    Right,
-}
+pub enum Instruction { Up, Down, Left, Right, }
 
 impl FromStr for Instruction {
     type Err = Box<Error>;
