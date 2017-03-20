@@ -25,7 +25,21 @@ pub fn puzzle(s: &str) -> String {
 }
 
 #[derive(Debug, PartialEq, Copy, Clone)]
-pub enum Key { One, Two, Three, Four, Five, Six, Seven, Eight, Nine, A, B, C, D }
+pub enum Key {
+    One,
+    Two,
+    Three,
+    Four,
+    Five,
+    Six,
+    Seven,
+    Eight,
+    Nine,
+    A,
+    B,
+    C,
+    D,
+}
 
 impl Key {
     pub fn execute(&mut self, instr: Instruction) {
@@ -103,7 +117,13 @@ impl Default for Key {
 impl fmt::Display for Key {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let output: char = match self.to_int() {
-            1...9 => self.to_int().to_string().chars().nth(0).unwrap(),
+            1...9 => {
+                self.to_int()
+                    .to_string()
+                    .chars()
+                    .nth(0)
+                    .unwrap()
+            }
             10 => 'A',
             11 => 'B',
             12 => 'C',
@@ -141,7 +161,12 @@ impl ToKey for i32 {
 }
 
 #[derive(Debug, PartialEq, Copy, Clone)]
-pub enum Instruction { Up, Down, Left, Right, }
+pub enum Instruction {
+    Up,
+    Down,
+    Left,
+    Right,
+}
 
 impl FromStr for Instruction {
     type Err = Box<Error>;
