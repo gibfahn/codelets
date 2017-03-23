@@ -22,33 +22,35 @@ pub fn puzzle(s: &str) -> usize {
 }
 
 pub fn puzzle2(s: &str) -> usize {
-    let mut newS = String::new();
+    let mut new_s = String::new();
     let mut it = s.lines().peekable();
     let mut v = vec![];
-    let mut vnew = vec![];
+    let mut v_newc = vec![];
     loop {
-        for i in 1...3 {
-            vnew.push(String::new());
+        for _ in 1...3 {
+            v_newc.push(String::new());
         }
-        if it.peek() == None { break; }
-        for i in 1...3 {
+        if it.peek() == None {
+            break;
+        }
+        for _ in 1...3 {
             v.push(it.next().expect("Number of lines in input should be a multiple of 3"));
         }
         for line in &v {
             for (n, word) in line.split_whitespace().enumerate() {
-                vnew[n].push_str(word);
-                vnew[n].push(' ');
+                v_newc[n].push_str(word);
+                v_newc[n].push(' ');
             }
         }
-        for line in &vnew {
-            newS.push_str(line);
-            newS.push('\n');
+        for line in &v_newc {
+            new_s.push_str(line);
+            new_s.push('\n');
         }
 
-        vnew.clear();
+        v_newc.clear();
         v.clear();
     }
-    puzzle(&newS)
+    puzzle(&new_s)
 }
 
 
