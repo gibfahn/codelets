@@ -1,3 +1,4 @@
+#![feature(inclusive_range_syntax)]
 use std::error::Error;
 use std::fs::File;
 use std::io::prelude::*;
@@ -8,6 +9,7 @@ fn main() {
     let mut input = String::new();
     file.read_to_string(&mut input).expect("Could not read input");
     println!("Possible triangles: {}", puzzle(&input));
+    println!("Possible triangles 2: {}", puzzle2(&input));
 }
 
 pub fn puzzle(s: &str) -> usize {
@@ -17,6 +19,36 @@ pub fn puzzle(s: &str) -> usize {
         //.inspect(|l| println!("l: {:?}, is_valid: {}", l, l.is_valid()))
         .filter(|l| l.is_valid())
         .count()
+}
+
+pub fn puzzle2(s: &str) -> usize {
+    let mut newS = String::new();
+    let mut it = s.lines().peekable();
+    let mut v = vec![];
+    let mut vnew = vec![];
+    loop {
+        for i in 1...3 {
+            vnew.push(String::new());
+        }
+        if it.peek() == None { break; }
+        for i in 1...3 {
+            v.push(it.next().expect("Number of lines in input should be a multiple of 3"));
+        }
+        for line in &v {
+            for (n, word) in line.split_whitespace().enumerate() {
+                vnew[n].push_str(word);
+                vnew[n].push(' ');
+            }
+        }
+        for line in &vnew {
+            newS.push_str(line);
+            newS.push('\n');
+        }
+
+        vnew.clear();
+        v.clear();
+    }
+    puzzle(&newS)
 }
 
 
@@ -65,5 +97,13 @@ mod test {
         let t = "5 10 25".parse::<Triangle>().unwrap();
         assert!(!t.is_valid());
         assert_eq!(t, Triangle(5, 10, 25));
+    }
+    #[test]
+    fn test_puzzle2() {
+        let s = "1 4 7 \n 2 5 8\n 3 6 9";
+        let s2 = "1 2 3 \n 4 5 6\n 7 8 9";
+        let output = puzzle(s);
+        let output2 = puzzle2(s2);
+        assert_eq!(output, output2);
     }
 }
