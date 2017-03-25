@@ -11,12 +11,16 @@ fn main() {
     let puzzle1: usize = input.lines()
         .map(|s| s.parse::<Room>().expect(&format!("Couldn't parse {} into Room", s)))
         .filter(|r| r.check_checksum())
-        .map(|r| r.sector_id).sum();
+        .map(|r| r.sector_id)
+        .sum();
     println!("First part puzzle output: {}", puzzle1);
     let puzzle2 = input.lines()
         .map(|s| s.parse::<Room>().expect(&format!("Couldn't parse {} into Room", s)))
         .filter(|r| r.check_checksum())
-        .map(|mut r| {r.shift_cipher(); r})
+        .map(|mut r| {
+                 r.shift_cipher();
+                 r
+             })
         .filter(|r| r.name.contains("north") || r.name.contains("pole"))
         .collect::<Vec<_>>();
     println!("Second part puzzle output: {:?}", puzzle2);
@@ -32,13 +36,10 @@ pub struct Room {
 impl Room {
     pub fn shift_cipher(&mut self) {
         let shift_width = (self.sector_id % 26) as u8;
-        self.name = self.name.chars().map(|mut c| {
-            if c == '-' {
-               ' '
-            } else {
-                c.shift(shift_width)
-            }})
-        .collect();
+        self.name = self.name
+            .chars()
+            .map(|mut c| if c == '-' { ' ' } else { c.shift(shift_width) })
+            .collect();
     }
 
     pub fn calc_checksum(&self) -> String {
@@ -50,7 +51,10 @@ impl Room {
         let mut tally: Vec<(char, u32)> = tally.into_iter().collect();
         tally.sort_by_key(|el| el.0);
         tally.sort_by(|a, b| b.1.cmp(&a.1));
-        tally.into_iter().map(|(letter, _)| letter).take(5).collect()
+        tally.into_iter()
+            .map(|(letter, _)| letter)
+            .take(5)
+            .collect()
     }
 
     pub fn check_checksum(&self) -> bool {
@@ -67,7 +71,11 @@ impl FromStr for Room {
         let checksum = checksum.chars().filter(|&c| c != '[' && c != ']').collect();
         let sector_id = sector_id.chars().skip(1).collect::<String>();
         let sector_id = sector_id.parse::<usize>()?;
-        Ok(Room {name, checksum, sector_id})
+        Ok(Room {
+               name,
+               checksum,
+               sector_id,
+           })
     }
 }
 
@@ -97,35 +105,39 @@ mod test {
     #[test]
     fn room_parsing_and_checksums() {
         let input = parse_room("aaaaa-bbb-z-y-x-123[abxyz]");
-        assert_eq!(input, Room {
-            name: String::from("aaaaa-bbb-z-y-x"),
-            checksum: String::from("abxyz"),
-            sector_id: 123,
-        });
+        assert_eq!(input,
+                   Room {
+                       name: String::from("aaaaa-bbb-z-y-x"),
+                       checksum: String::from("abxyz"),
+                       sector_id: 123,
+                   });
         assert!(input.check_checksum());
 
         let input = parse_room("a-b-c-d-e-f-g-h-987[abcde]");
-        assert_eq!(input, Room {
-            name: String::from("a-b-c-d-e-f-g-h"),
-            checksum: String::from("abcde"),
-            sector_id: 987,
-        });
+        assert_eq!(input,
+                   Room {
+                       name: String::from("a-b-c-d-e-f-g-h"),
+                       checksum: String::from("abcde"),
+                       sector_id: 987,
+                   });
         assert!(input.check_checksum());
 
         let input = parse_room("not-a-real-room-404[oarel]");
-        assert_eq!(input, Room {
-            name: String::from("not-a-real-room"),
-            checksum: String::from("oarel"),
-            sector_id: 404,
-        });
+        assert_eq!(input,
+                   Room {
+                       name: String::from("not-a-real-room"),
+                       checksum: String::from("oarel"),
+                       sector_id: 404,
+                   });
         assert!(input.check_checksum());
 
         let input = parse_room("totally-real-room-200[decoy]");
-        assert_eq!(input, Room {
-            name: String::from("totally-real-room"),
-            checksum: String::from("decoy"),
-            sector_id: 200,
-        });
+        assert_eq!(input,
+                   Room {
+                       name: String::from("totally-real-room"),
+                       checksum: String::from("decoy"),
+                       sector_id: 200,
+                   });
         assert!(!input.check_checksum());
     }
 
