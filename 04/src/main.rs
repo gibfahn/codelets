@@ -23,7 +23,7 @@ fn main() {
              })
         .filter(|r| r.name.contains("north") || r.name.contains("pole"))
         .collect::<Vec<_>>();
-    println!("Second part puzzle output: {:?}", puzzle2);
+    println!("Second part puzzle output: {:#?}", puzzle2);
 }
 
 #[derive(Debug, PartialEq)]
@@ -86,10 +86,9 @@ trait Shift {
 impl Shift for char {
     fn shift(&mut self, shift: u8) -> char {
         let mut out = *self as u8 + shift;
-        while out > 'z' as u8 {
+        while out > b'z' {
             out -= 26;
         }
-        //println!("{} ({}) => {} ({})", *self, *self as u8, out, out as char);
         out as char
     }
 }
@@ -143,7 +142,6 @@ mod test {
 
     #[test]
     fn shift_chars() {
-        println!();
         assert_eq!('a'.shift(2), 'c');
         assert_eq!('z'.shift(2), 'b');
     }
