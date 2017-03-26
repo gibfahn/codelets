@@ -11,7 +11,7 @@ fn main() {
 
 fn puzzle(s: &str) -> String {
     let mut output = String::new();
-    for line in transpose(s).iter() {
+    for line in &transpose(s) {
         output.push(most_common(line));
     }
     output
@@ -19,7 +19,7 @@ fn puzzle(s: &str) -> String {
 
 fn puzzle2(s: &str) -> String {
     let mut output = String::new();
-    for line in transpose(s).iter() {
+    for line in &transpose(s) {
         output.push(least_common(line));
     }
     output
@@ -27,7 +27,11 @@ fn puzzle2(s: &str) -> String {
 
 /// Reads the string vertically and returns it horizontally.
 fn transpose(s: &str) -> Vec<String> {
-    let length = s.lines().map(|l| l.trim()).next().unwrap().len();
+    let length = s.lines()
+        .map(|l| l.trim())
+        .next()
+        .unwrap()
+        .len();
     let mut output = vec![String::new(); length];
     for line in s.lines().map(|l| l.trim()) {
         for (n, c) in line.chars().enumerate() {
@@ -44,8 +48,9 @@ fn most_common(s: &str) -> char {
     for c in s.chars() {
         *char_map.entry(c).or_insert(0) += 1;
     }
-    let (c, _) = char_map.iter()
-        .fold((' ', 0), |max, (&c, &n)| if n > max.1 { (c, n) } else { max });
+    let (c, _) =
+        char_map.iter().fold((' ', 0),
+                             |max, (&c, &n)| if n > max.1 { (c, n) } else { max });
     c
 }
 
@@ -56,8 +61,9 @@ fn least_common(s: &str) -> char {
     for c in s.chars() {
         *char_map.entry(c).or_insert(0) += 1;
     }
-    let (c, _) = char_map.iter()
-        .fold((' ', std::u64::MAX), |min, (&c, &n)| if n < min.1 { (c, n) } else { min });
+    let (c, _) =
+        char_map.iter().fold((' ', std::u64::MAX),
+                             |min, (&c, &n)| if n < min.1 { (c, n) } else { min });
     c
 }
 
@@ -83,8 +89,12 @@ mod test {
                      vrdear
                      dvrsen
                      enarar";
-        let expected = ["ederatsrnnstvvde", "eraatsdastvenrvn",
-            "dvnaertssnestdra", "atdvvntrdatnsesr", "desrresttdvvnaea", "nerdsvavsaetdrnr"];
+        let expected = ["ederatsrnnstvvde",
+                        "eraatsdastvenrvn",
+                        "dvnaertssnestdra",
+                        "atdvvntrdatnsesr",
+                        "desrresttdvvnaea",
+                        "nerdsvavsaetdrnr"];
         println!("Transposed: {:?}", transpose(input));
         for (n, s) in transpose(input).iter().enumerate() {
             assert_eq!(s, expected[n]);
