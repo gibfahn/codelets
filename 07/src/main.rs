@@ -31,44 +31,60 @@ fn has_ssl(s: &str) -> bool {
     let mut bab: Vec<(char, char)> = Vec::new();
     let mut in_hypernet = false;
     for i in 0..length {
-        if i >= length - 2 { break; }
+        if i >= length - 2 {
+            break;
+        }
         match v[i] {
-            '[' => { in_hypernet = true; continue; },
-            ']' => { in_hypernet = false; continue; },
-            _ => {},
+            '[' => {
+                in_hypernet = true;
+                continue;
+            }
+            ']' => {
+                in_hypernet = false;
+                continue;
+            }
+            _ => {}
         }
 
-        if v[i..i+3].iter().any(|&c| c == '[' || c == ']') { continue; }
-        if v[i] == v[i+2] && v[i] != v[i+1] {
-            //println!("Found abba: {:?}", &v[i..i+4]);
+        if v[i..i + 3].iter().any(|&c| c == '[' || c == ']') {
+            continue;
+        }
+        if v[i] == v[i + 2] && v[i] != v[i + 1] {
             if in_hypernet {
-                bab.push((v[i], v[i+1]));
+                bab.push((v[i], v[i + 1]));
             } else {
-                aba.push((v[i], v[i+1]));
+                aba.push((v[i], v[i + 1]));
             }
         }
     }
-    //println!("aba: {:?}\nbab: {:?}\n", aba, bab);
     aba.iter().any(|&x| bab.contains(&(x.1, x.0)))
 }
 
 fn has_tls(s: &str) -> bool {
-    //println!("Input: '{}'", s);
     let v = s.chars().collect::<Vec<char>>();
     let length = v.len();
     let mut in_hypernet = false;
     let mut found_abba = false; // Have we found an ABBA outside hypernet?
     for i in 0..length {
-        if i >= length - 3 { break; }
+        if i >= length - 3 {
+            break;
+        }
         match v[i] {
-            '[' => { in_hypernet = true; continue; },
-            ']' => { in_hypernet = false; continue; },
-            _ => {},
+            '[' => {
+                in_hypernet = true;
+                continue;
+            }
+            ']' => {
+                in_hypernet = false;
+                continue;
+            }
+            _ => {}
         }
 
-        if v[i..i+4].iter().any(|&c| c == '[' || c == ']') { continue; }
-        if v[i] == v[i+3] && v[i+1] == v[i+2] && v[i] != v[i+1] {
-            //println!("Found abba: {:?}", &v[i..i+4]);
+        if v[i..i + 4].iter().any(|&c| c == '[' || c == ']') {
+            continue;
+        }
+        if v[i] == v[i + 3] && v[i + 1] == v[i + 2] && v[i] != v[i + 1] {
             if in_hypernet {
                 return false;
             } else {
@@ -76,7 +92,6 @@ fn has_tls(s: &str) -> bool {
             }
         }
     }
-    //println!("Found abba: {}", found_abba);
     found_abba
 }
 
