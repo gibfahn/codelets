@@ -7,12 +7,12 @@ fn main() {
 
 /// Checks whether a passphrase contains any words that repeat.
 pub fn is_valid(s: &str) -> bool {
-    let mut seen: HashMap<&str, bool> = HashMap::new();
+    let mut seen: HashMap<&str, ()> = HashMap::new();
     for word in s.split_whitespace() {
-        match seen.get(word) {
-            Some(&true) => { return false; },
-            Some(&false) => { panic!(); },
-            None => { seen.insert(word, true); },
+        if seen.get(word).is_some() {
+            return false;
+        } else {
+            seen.insert(word, ());
         }
     }
     true
