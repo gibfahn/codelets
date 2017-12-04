@@ -1,6 +1,8 @@
 //! Advent of Code 2017 - Day 3
 //! http://adventofcode.com/2017/day/3
 
+#![feature(iterator_step_by)]
+
 fn main() {
     let input = 361527;
     println!("First answer: {}", distance(input));
@@ -65,8 +67,7 @@ pub fn get_next_val(spiral: &Vec<usize>, n: usize, next_ring: &mut usize, next_r
             next_val += spiral[inside_corner - 1];
         }
         *next_ring += 2;
-        *next_ring_start = *next_ring * *next_ring;
-        // println!("First side: {} (next_ring: {}, next_ring_start: {})", n, next_ring, next_ring_start);
+        *next_ring_start = (*next_ring).pow(2);
         return next_val;
     }
     let ring = *next_ring - 2;
@@ -75,9 +76,7 @@ pub fn get_next_val(spiral: &Vec<usize>, n: usize, next_ring: &mut usize, next_r
     let quadrant = (n - ring_start) / side;
     let side_middle = ring_start + quadrant * side;
     let offset = n - side_middle;
-    // println!("ring: {}, ring_start: {}, side: {}, quadrant: {}, side_middle: {}, offset: {}", ring, ring_start, side, quadrant, side_middle, offset);
     if offset == 0 { // Other corner
-        // println!("Corner: {}", n);
         let inside_corner = if n <= 9 { 1 } else {
             let last_side = side - 2;
             let prev_ring_start = (ring - 2).pow(2);
@@ -90,27 +89,22 @@ pub fn get_next_val(spiral: &Vec<usize>, n: usize, next_ring: &mut usize, next_r
         }
         return next_val;
     } else { // Side
-        // println!("Side: {}", n);
         let inside_side = if n <= 9 { 1 } else {
             let last_side = side - 2;
             let prev_ring_start = (ring - 2).pow(2);
             prev_ring_start + quadrant * last_side + offset - 1
         };
         next_val += spiral[inside_side - 1];
-        // println!("inside_side: {}", inside_side);
         let inside_side_prev = if offset == 1 || n == ring_start + 2 {
             n - 2
         } else { inside_side - 1 };
-        // println!("inside_side_prev: {}", inside_side_prev);
         next_val += spiral[inside_side_prev - 1];
         if offset != side - 1 {
             let inside_side_next = inside_side + 1;
-            // println!("inside_side_next: {}", inside_side_next);
             next_val += spiral[inside_side_next - 1];
         }
         if n == *next_ring_start - 1 {
             let inside_side_next = ring_start + 1;
-            // println!("inside_side_next: {}", inside_side_next);
             next_val += spiral[inside_side_next - 1];
         }
         return next_val;
