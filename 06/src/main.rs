@@ -15,8 +15,15 @@ pub fn redist_count(s: &str) -> usize {
         // println!("Banks: {:?}", banks);
         // println!("Bank history: {:?}", bank_history);
         // TODO(gib): Fix unnecessary clone (wish we had NLL).
-        let (mut counter, mut max) = banks.clone().into_iter()
-            .enumerate().max_by_key(|&(a, b)| (b, bank_len - a)).unwrap();
+        let mut counter;
+        let mut max;
+        {
+            let (counter2, max2) = banks.iter()
+                .enumerate().max_by_key(|&(a, b)| (b, bank_len - a)).unwrap();
+            max = *max2;
+            counter = counter2;
+
+        }
         banks[counter] = 0;
         while max > 0 {
             counter = (counter + 1) % bank_len;
