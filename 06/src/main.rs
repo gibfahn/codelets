@@ -16,15 +16,9 @@ pub fn redist_count(s: &str, p: Problem) -> usize {
     let mut bank_history: Vec<Vec<usize>> = Vec::with_capacity(100);
     while ! bank_history.iter().any(|bank| bank.iter().zip(banks.iter()).all(|(a,b)| a == b)) {
         bank_history.push(banks.clone());
-        let mut counter;
-        let mut max;
-        {
-            let (counter2, max2) = banks.iter()
-                .enumerate().max_by_key(|&(a, b)| (b, bank_len - a)).unwrap();
-            max = *max2;
-            counter = counter2;
-
-        }
+        let mut counter = banks.iter()
+            .enumerate().max_by_key(|&(a, b)| (b, bank_len - a)).unwrap().0;
+        let mut max = banks[counter];
         banks[counter] = 0;
         while max > 0 {
             counter = (counter + 1) % bank_len;
