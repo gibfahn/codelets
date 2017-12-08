@@ -22,7 +22,6 @@ fn get_root(s: &str) -> String {
 }
 
 fn get_right_weight(s: &str) -> usize {
-    let root = get_root(s);
     let bottoms: Vec<Vec<String>> = s.lines()
         .filter_map(|line| match line.split_whitespace().nth(2) {
             Some(_) => Some(line.split_whitespace()
@@ -42,19 +41,65 @@ fn get_right_weight(s: &str) -> usize {
                     .collect::<String>().parse::<usize>().unwrap()
             )})
         .collect();
-    let total_weights: HashMap<String, usize> = children.difference(&parents)
+    let mut total_weights: HashMap<String, usize> = children.difference(&parents)
         .map(|leaf| (leaf.clone(), *individual_weights.get(leaf).unwrap())).collect();
+    let mut families: HashMap<String, Vec<String>> = s.lines()
+        .map(|line| {
+            let mut words = line.split_whitespace();
+            (
+                words.next().unwrap().to_owned(),
+                words.skip(2).map(|word| word.chars().filter(|&c| c != ',').collect::<String>()
+                                  ).collect(),
+            )})
+        .collect();
     for (name, _) in total_weights.iter() {
         children.remove(name);
+        families.remove(name);
     }
-    println!("bottoms: {:?}", bottoms);
-    60
+    'outer: loop {
+        // println!("bottoms: {:?}\n", bottoms);
+        // println!("families: {:?}\n", families);
+        // println!("total weights: {:?}\n", total_weights);
+        // println!("individual_weights: {:?}\n", individual_weights);
+        // println!("parents: {:?}\n", parents);
+        // println!("children: {:?}\n", children);
+        let to_check: Vec<(String, Vec<String>)> = families.iter()
+            // .inspect(|&(parent, children)| {
+            //     println!("CHILDREN: {:?} ({})", children, parent);
+            //     println!("total weights: {:?}\n", total_weights);
+            //     for child in children {
+            //         println!("{}: {}", child, total_weights.contains_key(child));
+            //     }
+            // })
+            .filter(|&(parent, children)| children.iter().all(|child| total_weights.contains_key(child)))
+            .map(|(parent, children)| (parent.to_owned(), children.clone()))
+            .collect();
+        // println!("to_check: {:#?}\n", to_check);
+        for &(ref parent, ref children) in to_check.iter() {
+            let mut expected_weight = *total_weights.get(&children[0]).unwrap();
+            // println!("Weights: {:?}, {:?}, {:?}", total_weights.get(&children[0]), total_weights.get(&children[1]), total_weights.get(&children[2]));
+            // println!("A: {:?}, B: {:?}", total_weights.get(&children[0]) != total_weights.get(&children[1]), total_weights.get(&children[1]) == total_weights.get(&children[2]));
+            if total_weights.get(&children[0]) != total_weights.get(&children[1]) && 
+                total_weights.get(&children[1]) == total_weights.get(&children[2]) {
+                    expected_weight = *total_weights.get(&children[1]).unwrap();
+                }
+            // println!("expected_weight: {:?}\n", expected_weight);
+
+            if let Some(unbalanced) = children.iter().find(|&child| *total_weights.get(child).unwrap() != expected_weight) {
+                assert!(children.len() > 2);
+                return *individual_weights.get(unbalanced).unwrap() - (*total_weights.get(unbalanced).unwrap() - expected_weight);
+            } else {
+                total_weights.insert(parent.clone(), individual_weights.get(parent).unwrap() + children.len() * expected_weight);
+                families.remove(parent);
+            }
+        }
+    }
 }
 
 
-    // ugml + (gyxo + ebii + jptl) = 68 + (61 + 61 + 61) = 251
-    // padx + (pbga + havc + qoyq) = 45 + (66 + 66 + 66) = 243
-    // fwft + (ktlj + cntj + xhth) = 72 + (57 + 57 + 57) = 243
+// ugml + (gyxo + ebii + jptl) = 68 + (61 + 61 + 61) = 251
+// padx + (pbga + havc + qoyq) = 45 + (66 + 66 + 66) = 243
+// fwft + (ktlj + cntj + xhth) = 72 + (57 + 57 + 57) = 243
 
 #[test]
 fn example_1() {
@@ -81,3 +126,10 @@ fn problem_1() {
     let input = include_str!("../input.txt");
     assert_eq!(get_root(input), String::from("hlhomy"));
 }
+
+#[test]
+fn problem_2() {
+    let input = include_str!("../input.txt");
+    assert_eq!(get_right_weight(input), 1505);
+}
+
