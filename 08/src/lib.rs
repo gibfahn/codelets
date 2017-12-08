@@ -11,10 +11,11 @@ pub fn get_largest(s: &str, p: &Problem) -> isize {
     let mut max_val = 0;
     for line in s.lines() {
         let words: Vec<&str> = line.split_whitespace().collect();
+        // println!("Words: {:?}", words);
         assert_eq!(words[3], "if");
         let condition = { // If the condition doesn't match we shouldn't perform the operation.
-            let lhs: isize = words[4].parse::<isize>().ok().unwrap_or(*registers.entry(words[4].to_owned()).or_insert(0));
-            let rhs: isize = words[6].parse::<isize>().ok().unwrap_or(*registers.entry(words[6].to_owned()).or_insert(0));
+            let lhs: isize = words[4].parse::<isize>().ok().unwrap_or_else(|| *registers.entry(words[4].to_owned()).or_insert(0));
+            let rhs: isize = words[6].parse::<isize>().ok().unwrap_or_else(|| *registers.entry(words[6].to_owned()).or_insert(0));
             match words[5] {
                 ">" => lhs > rhs,
                 "<" => lhs < rhs,
@@ -35,6 +36,7 @@ pub fn get_largest(s: &str, p: &Problem) -> isize {
             };
             max_val = std::cmp::max(*register, max_val);
         }
+        // println!("Registers: {:?}\n", registers);
     }
     match *p {
         Problem::First => *registers.iter().max_by_key(|&(_, val)| val).unwrap().1,
