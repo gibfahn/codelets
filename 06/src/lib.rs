@@ -1,16 +1,12 @@
-fn main() {
-    println!("Hello, world!");
-}
-
 pub enum Problem {
     First,
     Second,
 }
 
 /// Takes a list of memory banks, and tries to redistribute them as much as possible. Returns
-/// the number of redistributions until it starts to cycle if Problem::First passed, or the
-/// number of iterations since the loop if Problem::Second passed.
-pub fn redist_count(s: &str, p: Problem) -> usize {
+/// the number of redistributions until it starts to cycle if `Problem::First` passed, or the
+/// number of iterations since the loop if `Problem::Second` passed.
+pub fn redist_count(s: &str, p: &Problem) -> usize {
     let mut banks: Vec<usize> = s.split_whitespace().map(|word| word.parse().unwrap()).collect();
     let bank_len = banks.len();
     let mut bank_history: Vec<Vec<usize>> = Vec::with_capacity(100);
@@ -27,7 +23,7 @@ pub fn redist_count(s: &str, p: Problem) -> usize {
         }
     }
 
-    match p {
+    match *p {
         Problem::First => bank_history.len(),
         Problem::Second => {
             // TODO(gib): We could avoid this calculation by storing the result from the while
@@ -42,23 +38,23 @@ pub fn redist_count(s: &str, p: Problem) -> usize {
 #[test]
 fn example_1() {
     let input = "0 2 7 0";
-    assert_eq!(redist_count(input, Problem::First), 5);
+    assert_eq!(redist_count(input, &Problem::First), 5);
 }
 
 #[test]
 fn problem_1() {
     let input = include_str!("../input.txt");
-    assert_eq!(redist_count(input, Problem::First), 7864);
+    assert_eq!(redist_count(input, &Problem::First), 7864);
 }
 
 #[test]
 fn example_2() {
     let input = "0 2 7 0";
-    assert_eq!(redist_count(input, Problem::Second), 4);
+    assert_eq!(redist_count(input, &Problem::Second), 4);
 }
 
 #[test]
 fn problem_2() {
     let input = include_str!("../input.txt");
-    assert_eq!(redist_count(input, Problem::Second), 1695);
+    assert_eq!(redist_count(input, &Problem::Second), 1695);
 }
