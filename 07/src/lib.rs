@@ -1,7 +1,7 @@
 use std::collections::{HashSet, HashMap};
 
 /// Get the root of a tree of nodes, given a list of nodes and their children.
-fn get_root(s: &str) -> String {
+pub fn get_root(s: &str) -> String {
     let bottoms: Vec<Vec<String>> = s.lines()
         .filter_map(|line| match line.split_whitespace().nth(2) {
             Some(_) => Some(line.split_whitespace()
@@ -19,7 +19,7 @@ fn get_root(s: &str) -> String {
 
 /// Given an unbalanced tree of nodes, where changing the weight of one node will balance the tree,
 /// work out what the weight of that node should be.
-fn get_right_weight(s: &str) -> usize {
+pub fn get_right_weight(s: &str) -> usize {
     let individual_weights: HashMap<String, usize> = s.lines()
         .map(|line| {
             let mut words = line.split_whitespace();
@@ -42,25 +42,30 @@ fn get_right_weight(s: &str) -> usize {
             .difference(
                 &families.iter().filter(|&(_, children)| ! children.is_empty()) .map(|(a, _)| a.to_owned()).collect()
                         )
-            .map(|leaf| (leaf.clone(), *individual_weights.get(leaf).unwrap())).collect();
-    for (name, _) in total_weights.iter() { families.remove(name); }
-    'outer: loop {
+            .map(|leaf| (leaf.clone(), individual_weights[leaf])).collect();
+    for name in total_weights.keys() { families.remove(name); }
+    loop {
         let to_check: Vec<(String, Vec<String>)> = families.iter()
             .filter(|&(_, children)| children.iter().all(|child| total_weights.contains_key(child)))
             .map(|(parent, children)| (parent.to_owned(), children.clone()))
             .collect();
-        for &(ref parent, ref children) in to_check.iter() {
-            let mut expected_weight = *total_weights.get(&children[0]).unwrap();
-            if total_weights.get(&children[0]) != total_weights.get(&children[1]) && 
-                total_weights.get(&children[1]) == total_weights.get(&children[2]) {
-                    expected_weight = *total_weights.get(&children[1]).unwrap();
-                }
-
-            if let Some(unbalanced) = children.iter().find(|&child| *total_weights.get(child).unwrap() != expected_weight) {
+        for &(ref parent, ref children) in &to_check {
+            let expected_weight =
+                if total_weights.get(&children[0]) != total_weights.get(&children[1]) &&
+                    total_weights.get(&children[1]) == total_weights.get(&children[2])
+                {
+                    total_weights[&children[1]]
+                } else {
+                    total_weights[&children[0]]
+                };
+            if let Some(unbalanced) = children.iter()
+                .find(|&child| total_weights[child] != expected_weight)
+            {
                 assert!(children.len() > 2);
-                return *individual_weights.get(unbalanced).unwrap() - (*total_weights.get(unbalanced).unwrap() - expected_weight);
+                return individual_weights[unbalanced] - (total_weights[unbalanced] - expected_weight);
             } else {
-                total_weights.insert(parent.clone(), individual_weights.get(parent).unwrap() + children.len() * expected_weight);
+                total_weights.insert(parent.clone(),
+                                     individual_weights[parent] + children.len() * expected_weight);
                 families.remove(parent);
             }
         }
@@ -83,7 +88,7 @@ jptl (61)
 ugml (68) -> gyxo, ebii, jptl
 gyxo (61)
 cntj (57)".trim();
-    // assert_eq!(get_root(input), String::from("tknk"));
+    assert_eq!(get_root(input), String::from("tknk"));
     assert_eq!(get_right_weight(input), 60);
 }
 
@@ -97,4 +102,3 @@ fn problem_2() {
     let input = include_str!("../input.txt");
     assert_eq!(get_right_weight(input), 1505);
 }
-
