@@ -1,15 +1,7 @@
 //! Advent of Code 2017 - Day 3
-//! http://adventofcode.com/2017/day/3
+//! <http://adventofcode.com/2017/day/3>
 
-#![feature(iterator_step_by)]
-
-fn main() {
-    let input = 361527;
-    println!("First answer: {}", distance(input));
-    println!("Second answer: {}", get_first_value_larger_than(361527));
-}
-
-/// Calls get_next_val() until the value is larger than the provided threshold, at which point it
+/// Calls `get_next_val()` until the value is larger than the provided threshold, at which point it
 /// returns that value.
 pub fn get_first_value_larger_than(threshold: usize) -> usize {
     let mut spiral = Vec::with_capacity(100);
@@ -19,15 +11,13 @@ pub fn get_first_value_larger_than(threshold: usize) -> usize {
     let mut n = 1;
     while spiral[n-1] < threshold {
         n += 1;
-        // println!("\n{:?}, n: {}", spiral, n);
         let next_val = get_next_val(&spiral, n, &mut next_ring, &mut next_ring_start);
         spiral.push(next_val);
     }
-    // println!("\n{:?}", spiral);
     spiral[n-1]
 }
 
-/// Calls get_next_val() n times and returns the resulting Vector.
+/// Calls `get_next_val()` n times and returns the resulting Vector.
 pub fn get_n_values(max: usize) -> Vec<usize> {
     let mut spiral = Vec::with_capacity(max);
     let mut next_ring = 1;
@@ -36,11 +26,9 @@ pub fn get_n_values(max: usize) -> Vec<usize> {
     let mut n = 1;
     while n < max {
         n += 1;
-        // println!("\n{:?}, n: {}", spiral, n);
         let next_val = get_next_val(&spiral, n, &mut next_ring, &mut next_ring_start);
         spiral.push(next_val);
     }
-    // println!("\n{:?}", spiral);
     spiral
 }
 
@@ -48,7 +36,7 @@ pub fn get_n_values(max: usize) -> Vec<usize> {
 /// Given a vector representing a spiral where each result is the sum of the already populated
 /// values adjacent to it, for example:
 ///
-/// ```
+/// ```text
 /// 147  142  133  122   59
 /// 304    5    4    2   57
 /// 330   10    1    1   54
@@ -59,7 +47,7 @@ pub fn get_n_values(max: usize) -> Vec<usize> {
 /// [1, 1, 2, 4, 5, 10, 11, 23, 25, 26, 54, 57, 59, 122, 133, 142, 147, 304, 330, 351, 362, 747, 806, 880, 931];
 ///
 /// Work out the next number in the sequence.
-pub fn get_next_val(spiral: &Vec<usize>, n: usize, next_ring: &mut usize, next_ring_start: &mut usize) -> usize {
+pub fn get_next_val(spiral: &[usize], n: usize, next_ring: &mut usize, next_ring_start: &mut usize) -> usize {
     let mut next_val = spiral[n-2]; // Next val always contains the previous value.
     if n > *next_ring_start { // First side
         if n > 9 {
@@ -87,7 +75,7 @@ pub fn get_next_val(spiral: &Vec<usize>, n: usize, next_ring: &mut usize, next_r
             let inside_side = ring_start + 1;
             next_val += spiral[inside_side - 1];
         }
-        return next_val;
+        next_val
     } else { // Side
         let inside_side = if n <= 9 { 1 } else {
             let last_side = side - 2;
@@ -107,14 +95,14 @@ pub fn get_next_val(spiral: &Vec<usize>, n: usize, next_ring: &mut usize, next_r
             let inside_side_next = ring_start + 1;
             next_val += spiral[inside_side_next - 1];
         }
-        return next_val;
+        next_val
     }
 }
 
 
 /// Solution to the first problem. Given a spiral grid populated like this:
 ///
-/// ```
+/// ```text
 /// 65  64  63  62  61  60  59  58  57
 /// 66  37  36  35  34  33  32  31  56
 /// 67  38  17  16  15  14  13  30  55
