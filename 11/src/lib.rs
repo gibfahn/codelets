@@ -1,7 +1,7 @@
 #[derive(Default)]
 pub struct Point {
     x: isize,
-    y: isize
+    y: isize,
 }
 
 impl Point {
