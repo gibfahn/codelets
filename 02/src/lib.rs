@@ -1,12 +1,6 @@
 use std::cmp;
 
-fn main() {
-    let input = include_str!("../input.txt").trim();
-    println!("First result: {}", checksum(input));
-    println!("Second result: {}", checksum2(input));
-}
-
-fn checksum(s: &str) -> u32 {
+pub fn checksum(s: &str) -> u32 {
     s.lines().map(|line| {
         line.split_whitespace()
             .fold( (std::u32::MAX, std::u32::MIN), |(min, max), c| {
@@ -14,11 +8,10 @@ fn checksum(s: &str) -> u32 {
                 (cmp::min(min, n), cmp::max(max, n))
             })
     })
-    // .inspect(|x| println!("{:?}", x))
     .fold(0, | total, (min, max) | total + max - min)
 }
 
-fn checksum2(s: &str) -> u32 {
+pub fn checksum2(s: &str) -> u32 {
     let mut sum = 0;
     for line in s.lines() {
         let v: Vec<_> = line.split_whitespace()
