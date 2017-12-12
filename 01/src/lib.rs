@@ -1,18 +1,12 @@
-fn main() {
-    let input = include_str!("../input.txt").trim();
-    println!("First result: {}", captcha1(input));
-    println!("Second result: {}", captcha2(input));
-}
-
-fn captcha1(s: &str) -> u32 {
+pub fn captcha1(s: &str) -> u32 {
     captcha(s, 1)
 }
 
-fn captcha2(s: &str) -> u32 {
+pub fn captcha2(s: &str) -> u32 {
     captcha(s, s.len() / 2)
 }
 
-fn captcha(s: &str, skip: usize) -> u32 {
+pub fn captcha(s: &str, skip: usize) -> u32 {
     let input = s.chars()
         .map(|c| c.to_digit(10).unwrap())
         .collect::<Vec<u32>>();
