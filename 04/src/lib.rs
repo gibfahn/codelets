@@ -1,13 +1,5 @@
 use std::collections::HashMap;
 
-fn main() {
-    let input = include_str!("../input.txt").trim();
-    let result1 = count_valid(input);
-    println!("First answer: {}", result1);
-    let result2 = count_valid2(input);
-    println!("Second answer: {}", result2);
-}
-
 /// Counts the number of passphrases that are valid (uses `is_valid()` to test).
 pub fn count_valid(s: &str) -> usize {
     s.lines().filter(|line| is_valid(line)).count()
