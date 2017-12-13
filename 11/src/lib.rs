@@ -1,11 +1,10 @@
-#[derive(Default)]
-pub struct Point {
-    x: isize,
-    y: isize,
-}
+use std::cmp::max;
 
-impl Point {
-    pub fn take_step(&mut self, step: &str) {
+#[derive(Default)]
+pub struct Location { x: isize, y: isize, }
+
+impl Location {
+    pub fn walk(&mut self, step: &str) {
         match step {
             "n" => { self.x += 1; self.y += 1; },
             "s" => { self.x -= 1; self.y -= 1; },
@@ -18,33 +17,25 @@ impl Point {
     }
 
     fn distance(&mut self) -> usize {
-        if self.x > 0 && self.y > 0 || self.x < 0 && self.y < 0 {
-            std::cmp::max(isize::abs(self.x),isize::abs(self.y)) as usize
-        } else {
-            isize::abs(self.x - self.y) as usize
-        }
+        max((self.x - self.y).abs(), max(self.x.abs(), self.y.abs())) as usize
     }
 }
 
 pub fn total_distance(s: &str) -> usize {
-    let mut location = Point::default();
+    let mut location = Location::default();
     for step in s.trim().split(',') {
-        location.take_step(step);
+        location.walk(step);
     }
     location.distance()
 }
 
 pub fn max_distance(s: &str) -> usize {
-    let mut max_distance = 0;
-    let mut location = Point::default();
-    for step in s.trim().split(',') {
-        location.take_step(step);
-        max_distance = std::cmp::max(max_distance, location.distance());
-    }
-    max_distance
+    let mut location = Location::default();
+    s.trim().split(',').fold(0, |max_d, step| {
+        location.walk(step);
+        max(max_d, location.distance())
+    })
 }
-
-
 
 #[cfg(test)]
 mod tests {
@@ -54,10 +45,6 @@ mod tests {
         assert_eq!(total_distance("ne,ne,ne"), 3);
         assert_eq!(total_distance("ne,ne,sw,sw"), 0);
         assert_eq!(total_distance("ne,ne,s,s"), 2);
-    }
-
-    #[test]
-    fn example_1_2() {
         assert_eq!(total_distance("se,sw,se,sw,sw"), 3);
     }
 
