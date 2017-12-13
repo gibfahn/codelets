@@ -1,20 +1,16 @@
-pub struct Firewall {
-    layers: Vec<(usize, usize)>,
-}
+pub struct Firewall { layers: Vec<(usize, usize)>, }
 
 impl Firewall {
     pub fn from(layer_range: &str) -> Self {
-        let mut layers: Vec<(usize, usize)> = Vec::new();
-        for line in layer_range.trim().lines() {
-            let mut words = line.split_whitespace();
-            layers.push((
-                words.next().unwrap().chars().filter(|&c| c != ':').collect::<String>().parse::<usize>().unwrap(),
-                words.next().unwrap().parse::<usize>().unwrap()
-                ));
+        Firewall {
+            layers: layer_range.trim().lines().map(|line| {
+                let mut words = line.split(": ").map(|word| word.parse::<usize>().unwrap());
+                (words.next().unwrap(), words.next().unwrap())
+            }).collect::<Vec<(usize, usize)>>(),
         }
-        Firewall { layers }
     }
-    pub fn severity(&self) -> usize {
+
+   pub fn severity(&self) -> usize {
         self.layers.iter().fold(0, |severity, &(layer, range)| {
             severity + if range == 1 || layer % ((range - 1) * 2) == 0 { layer * range } else { 0 }
         })
@@ -34,29 +30,20 @@ mod tests {
     use super::*;
 
     #[test]
-    fn example_1_1() {
+    fn example() {
         let input =
 "0: 3
 1: 2
 4: 4
 6: 4";
         assert_eq!(Firewall::from(input).severity(), 24);
+        assert_eq!(Firewall::from(input).min_delay(), 10);
     }
 
     #[test]
     fn problem_1() {
         let input = include_str!("../input.txt");
         assert_eq!(Firewall::from(input).severity(), 1504);
-    }
-
-    #[test]
-    fn example_1_2() {
-        let input =
-"0: 3
-1: 2
-4: 4
-6: 4";
-        assert_eq!(Firewall::from(input).min_delay(), 10);
     }
 
     #[test]
