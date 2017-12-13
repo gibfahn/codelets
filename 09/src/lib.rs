@@ -1,13 +1,10 @@
 #[derive (PartialEq)]
-pub enum Problem {
-    First,
-    Second,
-}
+pub enum Part { One, Two, }
 
 /// Given a string of input, work out:
-/// - How many groups there are (if `p` is `&Problem::First`)
-/// - How much garbage there is (if `p` is `&Problem::Second`)
-pub fn groups(s: &str, p: &Problem) -> usize {
+/// - How many groups there are (if `p` is `&Part::One`)
+/// - How much garbage there is (if `p` is `&Part::Two`)
+pub fn groups(s: &str, p: &Part) -> usize {
     let mut group_count = 0;
     let mut garbage_count = 0;
     let mut group_depth = 0;
@@ -25,11 +22,7 @@ pub fn groups(s: &str, p: &Problem) -> usize {
             _ => {},
         }
     }
-    if p == &Problem::First {
-        group_count
-    } else {
-        garbage_count
-    }
+    if p == &Part::One { group_count } else { garbage_count }
 }
 
 #[cfg(test)]
@@ -38,39 +31,39 @@ mod tests {
 
     #[test]
     fn examples_1() {
-        assert_eq!(groups("{}", &Problem::First), 1);
-        assert_eq!(groups("{{{}}}", &Problem::First), 6);
-        assert_eq!(groups("{{},{}}", &Problem::First), 5);
-        assert_eq!(groups("{{{},{},{{}}}}", &Problem::First), 16);
-        assert_eq!(groups("{<a>,<a>,<a>,<a>}", &Problem::First), 1);
-        assert_eq!(groups("{{<ab>},{<ab>},{<ab>},{<ab>}}", &Problem::First), 9);
-        assert_eq!(groups("{{<!!>},{<!!>},{<!!>},{<!!>}}", &Problem::First), 9);
+        assert_eq!(groups("{}", &Part::One), 1);
+        assert_eq!(groups("{{{}}}", &Part::One), 6);
+        assert_eq!(groups("{{},{}}", &Part::One), 5);
+        assert_eq!(groups("{{{},{},{{}}}}", &Part::One), 16);
+        assert_eq!(groups("{<a>,<a>,<a>,<a>}", &Part::One), 1);
+        assert_eq!(groups("{{<ab>},{<ab>},{<ab>},{<ab>}}", &Part::One), 9);
+        assert_eq!(groups("{{<!!>},{<!!>},{<!!>},{<!!>}}", &Part::One), 9);
     }
 
     #[test]
     fn examples_1_2() {
-        assert_eq!(groups("{{<a!>},{<a!>},{<a!>},{<ab>}}", &Problem::First), 3);
+        assert_eq!(groups("{{<a!>},{<a!>},{<a!>},{<ab>}}", &Part::One), 3);
     }
 
     #[test]
     fn problem_1() {
-        assert_eq!(groups(include_str!("../input.txt"), &Problem::First), 9251);
+        assert_eq!(groups(include_str!("../input.txt"), &Part::One), 9251);
     }
 
     #[test]
     fn examples_2() {
-        assert_eq!(groups("<>", &Problem::Second), 0);
-        assert_eq!(groups("<random characters>", &Problem::Second), 17);
-        assert_eq!(groups("<<<<>", &Problem::Second), 3);
-        assert_eq!(groups("<{!>}>", &Problem::Second), 2);
-        assert_eq!(groups("<!!>", &Problem::Second), 0);
-        assert_eq!(groups("<!!!>>", &Problem::Second), 0);
-        assert_eq!(groups("<{o\"i!a,<{i<a>", &Problem::Second), 10);
+        assert_eq!(groups("<>", &Part::Two), 0);
+        assert_eq!(groups("<random characters>", &Part::Two), 17);
+        assert_eq!(groups("<<<<>", &Part::Two), 3);
+        assert_eq!(groups("<{!>}>", &Part::Two), 2);
+        assert_eq!(groups("<!!>", &Part::Two), 0);
+        assert_eq!(groups("<!!!>>", &Part::Two), 0);
+        assert_eq!(groups("<{o\"i!a,<{i<a>", &Part::Two), 10);
     }
 
     #[test]
     fn problem_2() {
-        assert_eq!(groups(include_str!("../input.txt"), &Problem::Second), 4322);
+        assert_eq!(groups(include_str!("../input.txt"), &Part::Two), 4322);
     }
 }
 
