@@ -1,17 +1,14 @@
 use std::collections::HashMap;
 
-pub enum Problem {
-    First,
-    Second,
-}
+#[derive(PartialEq)]
+pub enum Part { One, Two, }
 
 /// Parses a list of assembly instructions and returns the largest value stored in a register.
-pub fn get_largest(s: &str, p: &Problem) -> isize {
+pub fn get_largest(s: &str, p: &Part) -> isize {
     let mut registers: HashMap<String, isize> = HashMap::new();
     let mut max_val = 0;
     for line in s.lines() {
         let words: Vec<&str> = line.split_whitespace().collect();
-        // println!("Words: {:?}", words);
         assert_eq!(words[3], "if");
         let condition = { // If the condition doesn't match we shouldn't perform the operation.
             let lhs: isize = words[4].parse::<isize>().ok().unwrap_or_else(|| *registers.entry(words[4].to_owned()).or_insert(0));
@@ -36,12 +33,8 @@ pub fn get_largest(s: &str, p: &Problem) -> isize {
             };
             max_val = std::cmp::max(*register, max_val);
         }
-        // println!("Registers: {:?}\n", registers);
     }
-    match *p {
-        Problem::First => *registers.iter().max_by_key(|&(_, val)| val).unwrap().1,
-        Problem::Second => max_val,
-    }
+    if *p == Part::One { *registers.iter().max_by_key(|&(_, val)| val).unwrap().1 } else { max_val }
 }
 
 #[test]
@@ -51,18 +44,18 @@ b inc 5 if a > 1
 a inc 1 if b < 5
 c dec -10 if a >= 1
 c inc -20 if c == 10";
-    assert_eq!(get_largest(input.trim(), &Problem::First), 1);
-    assert_eq!(get_largest(input.trim(), &Problem::Second), 10);
+    assert_eq!(get_largest(input.trim(), &Part::One), 1);
+    assert_eq!(get_largest(input.trim(), &Part::Two), 10);
 }
 
 #[test]
 fn problem_1() {
     let input = include_str!("../input.txt");
-    assert_eq!(get_largest(input.trim(), &Problem::First), 3612);
+    assert_eq!(get_largest(input.trim(), &Part::One), 3612);
 }
 
 #[test]
 fn problem_2() {
     let input = include_str!("../input.txt");
-    assert_eq!(get_largest(input.trim(), &Problem::Second), 3818);
+    assert_eq!(get_largest(input.trim(), &Part::Two), 3818);
 }
