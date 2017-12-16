@@ -1,66 +1,46 @@
 use std::collections::HashMap;
 
-pub fn matches(pattern: &str, s: &str) -> bool {
-    let mut pattern_strings: HashMap<char, String> = HashMap::new();
+/// Checks whether a given pattern (`pattern`) matches a string (`s`). The pattern matches if
+/// each letter in the pattern makes up a word in the string. For example `abba` matches
+/// `redblueredblue` when a=red, b=blue.
+pub fn matches(pattern: &str, string: &str) -> bool {
+    let mut map = HashMap::new(); // Map of pattern char -> Word.
     let mut repeated_chars = false;
-    for c in pattern.chars() {
-        if pattern_strings.get(&c).is_some() {
+    for p in pattern.chars() {
+        if map.get(&p).is_some() {
             repeated_chars = true;
         } else {
-            pattern_strings.insert(c, String::new());
+            map.insert(p, String::new());
         }
     }
     if ! repeated_chars { return true; }
-
-    println!("\nPattern strings: {:?}", pattern_strings);
-    check_string(pattern, s, pattern_strings)
-    // println!("\nMatching pattern: {}, s: {}", pattern, s);
+    check_string(pattern, string, map)
 }
 
-pub fn check_string(pattern: &str, s: &str,
-                pattern_strings: HashMap<char, String>) -> bool {
-    println!("\n▶ {} - {} -> {:?}", pattern, s, pattern_strings);
-    if pattern.is_empty() || s.is_empty() {
-        println!("Done: {}", pattern.is_empty() && s.is_empty());
-        return pattern.is_empty() && s.is_empty();
+fn check_string(pattern: &str, string: &str, map: HashMap<char, String>) -> bool {
+    if pattern.is_empty() || string.is_empty() {
+        return pattern.is_empty() && string.is_empty();
     }
-    let p_next = pattern.chars().next().unwrap();
-    let p_match = pattern_strings.get(&p_next).unwrap();
-    println!("p_next: {:?}, p_match: {:?}", p_next, p_match);
-    if p_match != "" { // Have seen pattern before.
-        println!("{:?} == {:?} -> {}", p_match, "", p_match.len() == 0);
-        print!("Existing pattern pattern {:?}, checking further: ", p_next);
-        // println!("{:?} == {:?} -> {}", p_match, p_match.len() <= s.len() && &s[0..p_match.len()], &s[0..p_match.len()] == p_match);
-        if p_match.len() <= s.len() && &s[0..p_match.len()] == p_match { // Pattern matches previously seen pattern.
-            check_string(&pattern[1..], &s[p_match.len()..], pattern_strings.clone())
-        } else { // Pattern doesn't match.
-            println!("False");
-            false
-        }
-    } else { // Have not seen pattern before.
-        for i in 1..s.len() {
-            let mut new_pattern_strings = pattern_strings.clone();
-            new_pattern_strings.insert(p_next, s[0..i].to_string());
-            println!("New pattern {:?}, checking further {:?}", p_next, pattern_strings);
-            if check_string(&pattern[1..], &s[i..], new_pattern_strings) {
-                println!("True");
+    let p = pattern.chars().nth(0).unwrap(); // Next char in pattern.
+    let p_string = map.get(&p).unwrap(); // The word the map thinks p maps to.
+    if p_string.is_empty() { // Have not seen pattern before.
+        for i in 1..string.len() {
+            let mut new_map = map.clone();
+            new_map.insert(p, string[0..i].to_string());
+            // Try all possible matches for p.
+            if check_string(&pattern[1..], &string[i..], new_map) {
                 return true;
             }
         }
-        println!("All checked, False");
         false
+    } else { // Have seen pattern before.
+        let p_string_len = p_string.len();
+        if p_string_len <= string.len() && p_string == &string[0..p_string_len] { // Pattern matches previously seen pattern.
+            check_string(&pattern[1..], &string[p_string_len..], map.clone()) // Try rest of string.
+        } else { // Pattern doesn't match.
+            false
+        }
     }
-    // if let Some(p) = pattern.chars().next() {
-    //     if let Some(c) = s.chars().next() {
-    //         let x = pattern_strings.entry(p).or_insert_with(String::new);
-    //         (*x).push(c);
-    //     }
-    // }
-    // if s.len() > 0 && pattern.len() > 0 {
-    //     for i in 1..s.len() {
-    //         check_string(&pattern[1..], &s[i..], pattern_strings.clone());
-    //     }
-    // }
 }
 
 #[test]
