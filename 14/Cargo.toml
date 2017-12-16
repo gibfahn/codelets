@@ -1,0 +1,8 @@
+[package]
+name = "fourteen"
+version = "0.1.0"
+authors = ["Gibson Fahnestock <gibfahn@gmail.com>"]
+
+[dependencies]
+ten = { path = "../10" }
+bit-vec = "*"
