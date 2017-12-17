@@ -1,15 +1,23 @@
-pub fn fill_buffer(max_len: usize, step_size: usize) -> usize {
+pub fn fill_buffer_last(max_len: usize, step_size: usize) -> usize {
     let mut buffer = Vec::with_capacity(max_len+1);
-    buffer.push(0);
     let mut index = 0;
+    buffer.push(0);
     for i in 1..max_len+1 {
         index = (index + step_size) % i + 1;
-        // println!("index: {}", index);
         buffer.insert(index, i);
     }
-    // println!("buffer: {:?}", buffer);
-    // println!("index: {}, max_len: {}, buffer[index]: {}", index, max_len, buffer[index]);
     buffer[(index + 1) % (max_len + 1)]
+}
+
+pub fn fill_buffer_second(max_len: usize, step_size: usize) -> usize {
+    if max_len == 0 { return 0; }
+    let mut index = 0;
+    let mut output = 0;
+    for i in 1..max_len+1 {
+        index = (index + step_size) % i + 1;
+        if index == 1 { output = i }
+    }
+    output
 }
 
 
@@ -19,11 +27,21 @@ mod tests {
 
     #[test]
     fn example_1() {
-        assert_eq!(fill_buffer(2017, 3), 638);
+        assert_eq!(fill_buffer_last(2017, 3), 638);
     }
 
     #[test]
     fn problem_1() {
-        assert_eq!(fill_buffer(2017, 316), 0);
+        assert_eq!(fill_buffer_last(2017, 316), 180);
+    }
+
+    #[test]
+    fn example_2() {
+        assert_eq!(fill_buffer_second(50_000_000, 354), 10242889);
+    }
+
+    #[test]
+    fn problem_2() {
+        assert_eq!(fill_buffer_second(50_000_000, 316), 13326437);
     }
 }
