@@ -43,7 +43,7 @@ fn example_1() {
 
 #[test]
 fn problem_1() {
-    let input = include_str!("../input.txt");
+    let input = include_str!("../input");
     assert_eq!(redist_count(input, &Problem::First), 7864);
 }
 
@@ -55,6 +55,6 @@ fn example_2() {
 
 #[test]
 fn problem_2() {
-    let input = include_str!("../input.txt");
+    let input = include_str!("../input");
     assert_eq!(redist_count(input, &Problem::Second), 1695);
 }

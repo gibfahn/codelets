@@ -42,13 +42,13 @@ mod tests {
 
     #[test]
     fn problem_1() {
-        let input = include_str!("../input.txt");
+        let input = include_str!("../input");
         assert_eq!(Firewall::from(input).severity(), 1504);
     }
 
     #[test]
     fn problem_2() {
-        let input = include_str!("../input.txt");
+        let input = include_str!("../input");
         assert_eq!(Firewall::from(input).min_delay(), 3823370);
     }
 }

@@ -71,11 +71,11 @@ mod tests {
 
     #[test]
     fn problem_1() {
-        assert_eq!(Village::from(include_str!("../input.txt")).first_group(), 128);
+        assert_eq!(Village::from(include_str!("../input")).first_group(), 128);
     }
 
     #[test]
     fn problem_2() {
-        assert_eq!(Village::from(include_str!("../input.txt")).count_groups(), 209);
+        assert_eq!(Village::from(include_str!("../input")).count_groups(), 209);
     }
 }

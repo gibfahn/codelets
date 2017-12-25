@@ -50,11 +50,11 @@ mod tests {
 
     #[test]
     fn problem_1() {
-        assert_eq!(total_distance(include_str!("../input.txt")), 650);
+        assert_eq!(total_distance(include_str!("../input")), 650);
     }
 
     #[test]
     fn problem_2() {
-        assert_eq!(max_distance(include_str!("../input.txt")), 1465);
+        assert_eq!(max_distance(include_str!("../input")), 1465);
     }
 }

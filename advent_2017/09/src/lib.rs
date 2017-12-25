@@ -47,7 +47,7 @@ mod tests {
 
     #[test]
     fn problem_1() {
-        assert_eq!(groups(include_str!("../input.txt"), &Part::One), 9251);
+        assert_eq!(groups(include_str!("../input"), &Part::One), 9251);
     }
 
     #[test]
@@ -63,7 +63,7 @@ mod tests {
 
     #[test]
     fn problem_2() {
-        assert_eq!(groups(include_str!("../input.txt"), &Part::Two), 4322);
+        assert_eq!(groups(include_str!("../input"), &Part::Two), 4322);
     }
 }
 

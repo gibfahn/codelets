@@ -93,12 +93,12 @@ cntj (57)".trim();
 }
 
 #[test] fn problem_1() {
-    let input = include_str!("../input.txt");
+    let input = include_str!("../input");
     assert_eq!(get_root(input), String::from("hlhomy"));
 }
 
 #[test]
 fn problem_2() {
-    let input = include_str!("../input.txt");
+    let input = include_str!("../input");
     assert_eq!(get_right_weight(input), 1505);
 }

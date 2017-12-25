@@ -40,7 +40,7 @@ fn example_1() {
 
 #[test]
 fn puzzle_1() {
-    let input = include_str!("../input.txt").trim();
+    let input = include_str!("../input").trim();
     assert_eq!(checksum(input), 44887);
 }
 
@@ -55,6 +55,6 @@ fn example_2() {
 
 #[test]
 fn puzzle_2() {
-    let input = include_str!("../input.txt").trim();
+    let input = include_str!("../input").trim();
     assert_eq!(checksum2(input), 242);
 }

@@ -71,12 +71,12 @@ mod tests {
 
     #[test]
     fn problem_1() {
-        assert_eq!(dance(include_str!("../input.txt"), 16, 1), String::from("doeaimlbnpjchfkg"));
+        assert_eq!(dance(include_str!("../input"), 16, 1), String::from("doeaimlbnpjchfkg"));
     }
 
     #[test]
     fn problem_2() {
-        assert_eq!(dance(include_str!("../input.txt"), 16, 1_000_000_000), String::from("agndefjhibklmocp"));
+        assert_eq!(dance(include_str!("../input"), 16, 1_000_000_000), String::from("agndefjhibklmocp"));
     }
 }
 

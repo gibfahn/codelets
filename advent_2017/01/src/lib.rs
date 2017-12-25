@@ -38,7 +38,7 @@ fn example_1_3() {
 
 #[test]
 fn question_1() {
-    assert_eq!(captcha1(include_str!("../input.txt").trim()), 1182);
+    assert_eq!(captcha1(include_str!("../input").trim()), 1182);
 }
 
 #[test]
@@ -68,6 +68,6 @@ fn example_2_5() {
 
 #[test]
 fn question_2() {
-    assert_eq!(captcha2(include_str!("../input.txt").trim()), 1152);
+    assert_eq!(captcha2(include_str!("../input").trim()), 1152);
 }
 

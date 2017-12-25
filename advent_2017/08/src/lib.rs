@@ -50,12 +50,12 @@ c inc -20 if c == 10";
 
 #[test]
 fn problem_1() {
-    let input = include_str!("../input.txt");
+    let input = include_str!("../input");
     assert_eq!(get_largest(input.trim(), &Part::One), 3612);
 }
 
 #[test]
 fn problem_2() {
-    let input = include_str!("../input.txt");
+    let input = include_str!("../input");
     assert_eq!(get_largest(input.trim(), &Part::Two), 3818);
 }

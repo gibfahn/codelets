@@ -59,7 +59,7 @@ fn example_1_3() {
 
 #[test]
 fn problem_1() {
-    let input = include_str!("../input.txt").trim();
+    let input = include_str!("../input").trim();
     assert_eq!(count_valid(input), 466);
 }
 
@@ -90,6 +90,6 @@ fn example_2_6() {
 
 #[test]
 fn problem_2() {
-    let input = include_str!("../input.txt").trim();
+    let input = include_str!("../input").trim();
     assert_eq!(count_valid2(input), 251);
 }

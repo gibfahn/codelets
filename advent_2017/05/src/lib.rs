@@ -48,7 +48,7 @@ fn example_1() {
 
 #[test]
 fn problem_1() {
-    let input = include_str!("../input.txt");
+    let input = include_str!("../input");
     assert_eq!(program_count(input, &Problem::First), 372139);
 }
 
@@ -65,6 +65,6 @@ fn example_2() {
 
 #[test]
 fn problem_2() {
-    let input = include_str!("../input.txt");
+    let input = include_str!("../input");
     assert_eq!(program_count(input, &Problem::Second), 29629538);
 }

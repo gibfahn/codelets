@@ -93,7 +93,7 @@ mod tests {
 
     #[test]
     fn problem_1() {
-        assert_eq!(KnotHash::from_simple(include_str!("../input.txt"), 255).simple_hash(), 37230);
+        assert_eq!(KnotHash::from_simple(include_str!("../input"), 255).simple_hash(), 37230);
     }
 
     #[test]
@@ -106,7 +106,7 @@ mod tests {
 
     #[test]
     fn problem_2() {
-        let input = include_str!("../input.txt");
+        let input = include_str!("../input");
         assert_eq!(&KnotHash::from(input, 255).knot_hash(), "70b856a24d586194331398c7fcfa0aaf");
     }
 }
