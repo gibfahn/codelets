@@ -4,6 +4,7 @@ use std::collections::HashMap;
 /// each letter in the pattern makes up a word in the input. For example `abba` matches
 /// `redblueredblue` when a=red, b=blue.
 pub fn matches(pattern: &str, input: &str) -> bool {
+    if pattern.len() > input.len() { return false; }
     let mut map = HashMap::new(); // Map of pattern char -> Word.
     let mut repeated_chars = false;
     for p in pattern.chars() {
@@ -44,17 +45,45 @@ fn check_string(pattern: &str, input: &str, map: HashMap<char, String>) -> bool 
 }
 
 #[test]
+/// If the pattern has no repeating characters, it matches as long as the string is at least as
+/// long as the pattern.
 fn test_1() {
-    assert_eq!(matches("abdc", "odsihpoyywepqriohweoyafpsdoyh"), true);
+    assert_eq!(matches("a"         , "efghi"                         ) , true  );
+    assert_eq!(matches("abdc"      , "odsihpoyywepqriohweoyafpsdoyh" ) , true  );
+    assert_eq!(matches("abcdefghi" , "cat"                           ) , false );
 }
 
 #[test]
 fn test_2() {
-    assert_eq!(matches("abba", "redbluebluered"), true);
-    assert_eq!(matches("abba", "redbluebluereda"), false);
-    assert_eq!(matches("abba", "abcxyzxyzabc"), true);
-    assert_eq!(matches("abba", "abcxyzxyzabc"), true);
-    assert_eq!(matches("baab", "abcxyzxyzabc"), true);
-    assert_eq!(matches("dzzd", "abcxyzxyzabc"), true);
-    assert_eq!(matches("dzzd", "dzzda"), false);
+    assert_eq!(matches("abba"      , "redbluebluered"                ) , true  );
+    assert_eq!(matches("abba"      , "redbluebluereda"               ) , false );
+    assert_eq!(matches("abba"      , "abcxyzxyzabc"                  ) , true  );
+    assert_eq!(matches("abba"      , "abcxyzxyzabc"                  ) , true  );
+    assert_eq!(matches("baab"      , "abcxyzxyzabc"                  ) , true  );
+    assert_eq!(matches("dzzd"      , "abcxyzxyzabc"                  ) , true  );
+    assert_eq!(matches("dzzd"      , "dzzda"                         ) , false );
+    assert_eq!(matches("aba"       , "patrpatrr"                     ) , false );
+    assert_eq!(matches("abba"      , "redbluebluered"                ) , true  );
+    assert_eq!(matches("abba"      , "redbluebluereda"               ) , false );
+    assert_eq!(matches("abba"      , "abcxyzxyzabc"                  ) , true  );
+    assert_eq!(matches("abba"      , "abcxyzxyzabc"                  ) , true  );
+    assert_eq!(matches("baab"      , "abcxyzxyzabc"                  ) , true  );
+    assert_eq!(matches("dzzd"      , "abcxyzxyzabc"                  ) , true  );
+    assert_eq!(matches("dzzd"      , "dzzda"                         ) , false );
+    assert_eq!(matches("abba"      , "rblblr"                        ) , true  );
+    assert_eq!(matches("abab"      , "redblueredblue"                ) , true  );
+    assert_eq!(matches("abba"      , "catdogdogcat"                  ) , true  );
+    assert_eq!(matches("abab"      , "redblueredblue"                ) , true  );
+    assert_eq!(matches("abab"      , "catdogcatdog"                  ) , true  );
+    assert_eq!(matches("aba"       , "catdogcat"                     ) , true  );
+    assert_eq!(matches("abba"      , "catdogdogcat"                  ) , true  );
+    assert_eq!(matches("abcac"     , "catdogmousecatmouse"           ) , true  );
+    assert_eq!(matches("abcde"     , "efghi"                         ) , true  );
+    assert_eq!(matches("abab"      , "catdogcatcat"                  ) , false );
+    assert_eq!(matches("abab"      , "catdogcatdogg"                 ) , false );
+    assert_eq!(matches("abab"      , "catdocatdog"                   ) , false );
+    assert_eq!(matches("abab"      , "catdogcat"                     ) , false );
+    assert_eq!(matches("abba"      , "redblueredblue"                ) , false );
+    assert_eq!(matches("aba"       , "patrpatrr"                     ) , false );
 }
+
