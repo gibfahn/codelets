@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const assert = require('assert');
 
 function matches(pattern, input) {
@@ -25,7 +27,11 @@ function check_string(pattern, input, map) {
       let new_map = Object.assign({}, map);
       new_map[p] = input.slice(0,i);
       if (check_string(pattern.slice(1), input.slice(i), new_map)) {
-        return true;
+        const vals = Object.values(new_map);
+        const hasDups = vals.some((value, index) => vals.indexOf(value, index + 1) !== -1);
+        if (!hasDups) {
+          return true;
+        }
       }
     }
     return false;
@@ -40,6 +46,7 @@ function check_string(pattern, input, map) {
 
 assert.strictEqual(matches("abdc", "odsihpoyywepqriohweoyafpsdoyh"), true);
 assert.strictEqual(matches("abba", "redbluebluered"), true);
+assert.strictEqual(matches("abba", "redredredred"), false);
 assert.strictEqual(matches("abba", "redbluebluereda"), false);
 assert.strictEqual(matches("abba", "abcxyzxyzabc"), true);
 assert.strictEqual(matches("abba", "abcxyzxyzabc"), true);

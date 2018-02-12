@@ -18,6 +18,7 @@ pub fn matches(pattern: &str, input: &str) -> bool {
     check_string(pattern, input, map)
 }
 
+/// Check a string for a pattern, calls itself recursively.
 fn check_string(pattern: &str, input: &str, map: HashMap<char, String>) -> bool {
     if pattern.is_empty() || input.is_empty() {
         return pattern.is_empty() && input.is_empty();
@@ -29,8 +30,11 @@ fn check_string(pattern: &str, input: &str, map: HashMap<char, String>) -> bool 
             let mut new_map = map.clone();
             new_map.insert(p, input[0..i].to_string());
             // Try all possible matches for p.
-            if check_string(&pattern[1..], &input[i..], new_map) {
-                return true;
+            if check_string(&pattern[1..], &input[i..], new_map.clone()) {
+                // Only return true if there are no duplicate values (ignore empty strings).
+                let vals: Vec<_> = new_map.values().filter(|x| !x.is_empty()).collect();
+                let has_dups = (1..vals.len()).any(|i| vals[i..].contains(&vals[i - 1]));
+                if !has_dups { return true; }
             }
         }
         false
@@ -47,14 +51,14 @@ fn check_string(pattern: &str, input: &str, map: HashMap<char, String>) -> bool 
 #[test]
 /// If the pattern has no repeating characters, it matches as long as the string is at least as
 /// long as the pattern.
-fn test_1() {
+fn test_simple() {
     assert_eq!(matches("a"         , "efghi"                         ) , true  );
     assert_eq!(matches("abdc"      , "odsihpoyywepqriohweoyafpsdoyh" ) , true  );
     assert_eq!(matches("abcdefghi" , "cat"                           ) , false );
 }
 
 #[test]
-fn test_2() {
+fn test_complex() {
     assert_eq!(matches("abba"      , "redbluebluered"                ) , true  );
     assert_eq!(matches("abba"      , "redbluebluereda"               ) , false );
     assert_eq!(matches("abba"      , "abcxyzxyzabc"                  ) , true  );
@@ -87,3 +91,7 @@ fn test_2() {
     assert_eq!(matches("aba"       , "patrpatrr"                     ) , false );
 }
 
+#[test]
+fn test_dups() {
+    assert_eq!(matches("abba"      , "redredredred"                  ) , false );
+}

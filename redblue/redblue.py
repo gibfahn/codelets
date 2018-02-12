@@ -32,7 +32,9 @@ def checkstring(s, pattern, matches):
             newmatches = matches.copy()
             newmatches[p] = s[:i]
             if checkstring(s[i:], pattern[1:], newmatches):
-                return True
+                vals = [v for v in newmatches.values()]
+                if len(vals) == len(set(vals)):
+                    return True
         else: # None of the possibilities matched.
             return False
 
@@ -44,6 +46,7 @@ def test(pattern, string, expect):
         raise e
 
 test("abdc", "odsihpoyywepqriohweoyafpsdoyh", True);
+test("abba", "redredredred", False);
 test("abba", "redbluebluered", True);
 test("abba", "redbluebluereda", False);
 test("abba", "abcxyzxyzabc", True);
