@@ -9,5 +9,10 @@ in passing tests.
 You should be able to run `cargo doc --open` to build and see the docs for a
 given day.
 
+### Other solutions online
+
+- [shepmaster](https://github.com/shepmaster/adventofcode2016)
+- [carols10cents](https://github.com/carols10cents/adventofcode-rs)
+
 [Advent of Code]: http://adventofcode.com/
 [Rust]: https://www.rust-lang.org/
