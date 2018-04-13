@@ -27,13 +27,13 @@ pub fn puzzle2(s: &str) -> usize {
     let mut v = vec![];
     let mut v_newc = vec![];
     loop {
-        for _ in 1...3 {
+        for _ in 1..=3 {
             v_newc.push(String::new());
         }
         if it.peek() == None {
             break;
         }
-        for _ in 1...3 {
+        for _ in 1..=3 {
             v.push(it.next().expect("Number of lines in input should be a multiple of 3"));
         }
         for line in &v {

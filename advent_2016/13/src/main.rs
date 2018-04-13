@@ -1,4 +1,4 @@
-#![feature(associated_consts, inclusive_range_syntax)]
+#![feature(inclusive_range_syntax)]
 use std::fs::File;
 use std::io::prelude::*;
 use std::cmp::min;
@@ -108,9 +108,9 @@ impl Maze {
     pub fn visitable_locations(&self, from: Point, steps: usize) -> usize {
         let mut output: usize = 0;
 
-        for x in -(steps as i64)...steps as i64 {
+        for x in -(steps as i64)..=steps as i64 {
             if from.0 as i64 + x > 0 {
-                for y in -(steps as i64)...steps as i64 {
+                for y in -(steps as i64)..=steps as i64 {
                     if from.1 as i64 + y > 0 {
                         let x = from.0 + x as usize;
                         let y = from.1 + y as usize;
