@@ -14,7 +14,7 @@ pub fn second() -> i64 {
 /// of numbers. Returns the sum of initial and the change numbers.
 fn freq(initial: i64, changes: &str) -> i64 {
     changes
-        .split_terminator('\n')
+        .lines()
         .map(|n| n.parse::<i64>().unwrap())
         .fold(initial, |acc, n| acc + n)
 }
