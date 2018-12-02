@@ -6,9 +6,13 @@ fn main() {
 
     type StringFnPair = Vec<(fn() -> String, fn() -> String)>;
 
-    let day_fns: StringFnPair = vec![(one::first, one::second), (two::first, two::second)];
+    let day_fns: StringFnPair = vec![
+        (one::first, one::second),
+        (two::first, two::second),
+        (template::first, template::second),
+    ];
 
     for (n, (first, second)) in day_fns.iter().enumerate() {
-        println!("{:02}: {}, {}", n + 1, first(), second());
+        println!("{:02}: ({:?}, {:?})", n + 1, first(), second());
     }
 }
