@@ -4,6 +4,11 @@
 fn main() {
     println!("\nAdvent of Code 2018 Answers:\n");
 
-    println!("01: {}, {}", one::first(), one::second());
-    println!("02: {}, {}", two::first(), two::second());
+    type StringFnPair = Vec<(fn() -> String, fn() -> String)>;
+
+    let day_fns: StringFnPair = vec![(one::first, one::second), (two::first, two::second)];
+
+    for (n, (first, second)) in day_fns.iter().enumerate() {
+        println!("{:02}: {}, {}", n + 1, first(), second());
+    }
 }

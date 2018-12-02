@@ -2,12 +2,12 @@
 #![doc(include = "../Question.md")]
 use std::collections::HashSet;
 
-pub fn first() -> i64 {
-    freq(0, include_str!("../input"))
+pub fn first() -> String {
+    freq(0, include_str!("../input")).to_string()
 }
 
-pub fn second() -> i64 {
-    freq_repeat(0, include_str!("../input"))
+pub fn second() -> String {
+    freq_repeat(0, include_str!("../input")).to_string()
 }
 
 /// Takes an initial value and a newline-delineated set of numbers, and parses it into a set
@@ -54,7 +54,7 @@ mod tests {
 
     #[test]
     fn first_answer() {
-        assert_eq!(first(), 459);
+        assert_eq!(first(), "459");
     }
 
     #[test]
@@ -68,6 +68,6 @@ mod tests {
 
     #[test]
     fn second_answer() {
-        assert_eq!(second(), 65474);
+        assert_eq!(second(), "65474");
     }
 }

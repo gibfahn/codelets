@@ -3,8 +3,8 @@
 
 use std::collections::HashMap;
 
-pub fn first() -> u64 {
-    two_counts_times_three_counts(include_str!("../input"))
+pub fn first() -> String {
+    two_counts_times_three_counts(include_str!("../input")).to_string()
 }
 
 pub fn second() -> String {
@@ -80,7 +80,7 @@ mod tests {
 
     #[test]
     fn first_answer() {
-        assert_eq!(first(), 8398);
+        assert_eq!(first(), "8398");
     }
 
     #[test]
