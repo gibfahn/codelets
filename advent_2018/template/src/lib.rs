@@ -1,6 +1,8 @@
 #![feature(external_doc)]
 #![doc(include = "../Question.md")]
 
+const INPUT: &str = include_str!("../input");
+
 pub fn first() -> String {
     String::from("")
 }

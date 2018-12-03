@@ -3,12 +3,14 @@
 
 use std::collections::HashMap;
 
+const INPUT: &str = include_str!("../input");
+
 pub fn first() -> String {
-    two_counts_times_three_counts(include_str!("../input")).to_string()
+    two_counts_times_three_counts(INPUT).to_string()
 }
 
 pub fn second() -> String {
-    common_letters(include_str!("../input")).unwrap()
+    common_letters(INPUT).unwrap()
 }
 
 /// Takes a newline-separated list of IDs, and returns the product of the number of IDs with
