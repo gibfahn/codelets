@@ -1,28 +1,27 @@
 #![feature(external_doc)]
 #![doc(include = "../Question.md")]
 
-use std::collections::{HashSet, HashMap};
+use std::collections::{HashMap, HashSet};
 
-use failure::{bail, Error};
+use failure::{bail, ensure, Error};
 use std::str::FromStr;
 
 const INPUT: &str = include_str!("../input");
 
-pub fn first() -> String {
-    overlaps(INPUT).unwrap().to_string()
+pub fn answer() -> (String, String) {
+    (
+        overlaps(INPUT).unwrap().to_string(),
+        no_overlap(INPUT).unwrap().to_string(),
+    )
 }
 
-pub fn second() -> String {
-    no_overlap(INPUT).unwrap().to_string()
-}
-
-#[derive(Debug,PartialEq)]
+#[derive(Debug, PartialEq)]
 struct Point {
     x: u32,
     y: u32,
 }
 
-#[derive(Debug,PartialEq)]
+#[derive(Debug, PartialEq)]
 struct Claim {
     id: u32,
     top_left: Point,
@@ -33,7 +32,6 @@ impl FromStr for Claim {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-
         let re = regex::Regex::new(r"^#(\d+) @ (\d+),(\d+): (\d+)x(\d+)$").unwrap();
 
         let matches = re.captures(s);
@@ -43,7 +41,11 @@ impl FromStr for Claim {
         let matches = matches.unwrap();
 
         if matches.len() != 6 {
-            bail!("Wrong number of matches found when parsing Claim:\ninput: {:?}, matches: {:?}", s, matches);
+            bail!(
+                "Wrong number of matches found when parsing Claim:\ninput: {:?}, matches: {:?}",
+                s,
+                matches
+            );
         }
 
         let (id, left_offset, top_offset, width, height) = (
@@ -52,11 +54,18 @@ impl FromStr for Claim {
             matches[3].parse::<u32>()?,
             matches[4].parse::<u32>()?,
             matches[5].parse::<u32>()?,
-            );
+        );
 
-        Ok(Claim {id,
-            top_left: Point { x: left_offset, y: top_offset },
-            bottom_right: Point { x: left_offset + width, y: top_offset + height },
+        Ok(Claim {
+            id,
+            top_left: Point {
+                x: left_offset,
+                y: top_offset,
+            },
+            bottom_right: Point {
+                x: left_offset + width,
+                y: top_offset + height,
+            },
         })
     }
 }
@@ -68,8 +77,14 @@ fn overlaps(input: &str) -> Result<usize, Error> {
         .lines()
         .map(|l| l.parse::<Claim>())
         .partition(Result::is_ok);
-    if ! errors.is_empty() {
-        bail!("{:#?}", errors.into_iter().map(Result::unwrap_err).collect::<Vec<_>>());
+    if !errors.is_empty() {
+        bail!(
+            "{:#?}",
+            errors
+                .into_iter()
+                .map(Result::unwrap_err)
+                .collect::<Vec<_>>()
+        );
     }
     let claims: Vec<_> = results.into_iter().map(Result::unwrap).collect();
 
@@ -82,11 +97,11 @@ fn overlaps(input: &str) -> Result<usize, Error> {
         all.insert(claim.id);
         for x in claim.top_left.x..claim.bottom_right.x {
             for y in claim.top_left.y..claim.bottom_right.y {
-                *claim_map.entry((x,y)).or_insert(0) += 1;
-                if !claim_names.contains_key(&(x,y)) {
-                    claim_names.insert((x,y), claim.id);
+                *claim_map.entry((x, y)).or_insert(0) += 1;
+                if !claim_names.contains_key(&(x, y)) {
+                    claim_names.insert((x, y), claim.id);
                 } else {
-                    overlapping.insert(claim_names[&(x,y)]);
+                    overlapping.insert(claim_names[&(x, y)]);
                     overlapping.insert(claim.id);
                 }
             }
@@ -102,8 +117,14 @@ fn no_overlap(input: &str) -> Result<u32, Error> {
         .lines()
         .map(|l| l.parse::<Claim>())
         .partition(Result::is_ok);
-    if ! errors.is_empty() {
-        bail!("{:#?}", errors.into_iter().map(Result::unwrap_err).collect::<Vec<_>>());
+    if !errors.is_empty() {
+        bail!(
+            "{:#?}",
+            errors
+                .into_iter()
+                .map(Result::unwrap_err)
+                .collect::<Vec<_>>()
+        );
     }
     let claims: Vec<_> = results.into_iter().map(Result::unwrap).collect();
 
@@ -116,17 +137,24 @@ fn no_overlap(input: &str) -> Result<u32, Error> {
         all.insert(claim.id);
         for x in claim.top_left.x..claim.bottom_right.x {
             for y in claim.top_left.y..claim.bottom_right.y {
-                *claim_map.entry((x,y)).or_insert(0) += 1;
-                if !claim_names.contains_key(&(x,y)) {
-                    claim_names.insert((x,y), claim.id);
-                } else {
-                    overlapping.insert(claim_names[&(x,y)]);
+                *claim_map.entry((x, y)).or_insert(0) += 1;
+                // TODO(gib): Can we use claim_names.entry((x, y)) here as per clippy?
+                if claim_names.contains_key(&(x, y)) {
                     overlapping.insert(claim.id);
+                    overlapping.insert(claim_names[&(x, y)]);
+                } else {
+                    claim_names.insert((x, y), claim.id);
                 }
             }
         }
     }
 
+    let non_overlapping: HashSet<_> = all.difference(&overlapping).collect();
+    ensure!(
+        non_overlapping.len() == 1,
+        "Too many non-overlapping values found: {:?}",
+        non_overlapping
+    );
     Ok(*all.difference(&overlapping).next().unwrap())
 }
 
@@ -136,9 +164,14 @@ mod tests {
 
     #[test]
     fn parsing_test() {
-        assert_eq!("#1 @ 1,3: 4x4".parse::<Claim>().unwrap(),
-            Claim {id: 1, top_left: Point {x: 1, y: 3}, bottom_right: Point {x: 5, y: 7}}
-            );
+        assert_eq!(
+            "#1 @ 1,3: 4x4".parse::<Claim>().unwrap(),
+            Claim {
+                id: 1,
+                top_left: Point { x: 1, y: 3 },
+                bottom_right: Point { x: 5, y: 7 }
+            }
+        );
     }
 
     #[test]
@@ -151,8 +184,8 @@ mod tests {
     }
 
     #[test]
-    fn first_answer() {
-        assert_eq!(&first(), "124850");
+    fn test_answer() {
+        assert_eq!(answer(), (String::from("124850"), String::from("1097")));
     }
 
     #[test]
@@ -162,10 +195,5 @@ mod tests {
                      #3 @ 5,5: 2x2\n";
         let output = no_overlap(input);
         assert_eq!(output.unwrap(), 3);
-    }
-
-    #[test]
-    fn second_answer() {
-        assert_eq!(&second(), "1097");
     }
 }

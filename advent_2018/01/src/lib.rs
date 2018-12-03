@@ -4,12 +4,11 @@ use std::collections::HashSet;
 
 const INPUT: &str = include_str!("../input");
 
-pub fn first() -> String {
-    freq(0, INPUT).to_string()
-}
-
-pub fn second() -> String {
-    freq_repeat(0, INPUT).to_string()
+pub fn answer() -> (String, String) {
+    (
+        freq(0, INPUT).to_string(),
+        freq_repeat(0, INPUT).to_string(),
+    )
 }
 
 /// Takes an initial value and a newline-delineated set of numbers, and parses it into a set

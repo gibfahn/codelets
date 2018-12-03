@@ -3,12 +3,8 @@
 
 const INPUT: &str = include_str!("../input");
 
-pub fn first() -> String {
-    String::from("")
-}
-
-pub fn second() -> String {
-    String::from("")
+pub fn answer() -> (String, String) {
+    (String::from(""), String::from(""))
 }
 
 #[cfg(test)]

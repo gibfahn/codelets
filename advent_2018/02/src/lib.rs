@@ -5,12 +5,11 @@ use std::collections::HashMap;
 
 const INPUT: &str = include_str!("../input");
 
-pub fn first() -> String {
-    two_counts_times_three_counts(INPUT).to_string()
-}
-
-pub fn second() -> String {
-    common_letters(INPUT).unwrap()
+pub fn answer() -> (String, String) {
+    (
+        two_counts_times_three_counts(INPUT).to_string(),
+        common_letters(INPUT).unwrap().to_string(),
+    )
 }
 
 /// Takes a newline-separated list of IDs, and returns the product of the number of IDs with
