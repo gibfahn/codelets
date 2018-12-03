@@ -9,6 +9,7 @@ fn main() {
     let day_fns: StringFnPair = vec![
         (one::first, one::second),
         (two::first, two::second),
+        (three::first, three::second),
         (template::first, template::second),
     ];
 

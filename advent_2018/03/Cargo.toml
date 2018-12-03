@@ -1,0 +1,9 @@
+[package]
+name = "three"
+version = "0.1.0"
+authors = ["Gibson Fahnestock <gibfahn@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+failure = "0.1.3"
+regex = "1"

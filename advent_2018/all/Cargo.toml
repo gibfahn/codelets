@@ -7,4 +7,5 @@ edition = "2018"
 [dependencies]
 one = { path = "../01" }
 two = { path = "../02" }
+three = { path = "../03" }
 template = { path = "../template" }

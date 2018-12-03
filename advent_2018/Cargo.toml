@@ -3,5 +3,6 @@ members = [
   "all",
   "01",
   "02",
+  "03",
   "template",
 ]
