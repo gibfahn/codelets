@@ -11,9 +11,10 @@ use std::str::FromStr;
 const INPUT: &str = include_str!("../input");
 
 pub fn answer() -> (String, String) {
+    let cloth = Cloth::from(INPUT).unwrap();
     (
-        overlaps(INPUT).unwrap().to_string(),
-        no_overlap(INPUT).unwrap().to_string(),
+        cloth.overlaps().unwrap().to_string(),
+        cloth.no_overlap().unwrap().to_string(),
     )
 }
 
@@ -29,7 +30,6 @@ struct Claim {
     top_left: Point,
     bottom_right: Point,
 }
-
 impl FromStr for Claim {
     type Err = Error;
 
@@ -75,92 +75,69 @@ impl FromStr for Claim {
     }
 }
 
-/// Given an input that is a newline-separated list of claims, work out how many inches of
-/// the cloth have at least two overlapping claims.
-fn overlaps(input: &str) -> Result<usize, Error> {
-    let (results, errors): (Vec<_>, Vec<_>) = input
-        .lines()
-        .map(|l| l.parse::<Claim>())
-        .partition(Result::is_ok);
-    if !errors.is_empty() {
-        bail!(
-            "{:#?}",
-            errors
-                .into_iter()
-                .map(Result::unwrap_err)
-                .collect::<Vec<_>>()
-        );
-    }
-    let claims: Vec<_> = results.into_iter().map(Result::unwrap).collect();
 
-    let mut claim_map = HashMap::new();
-    let mut claim_names = HashMap::new();
-    let mut overlapping = HashSet::new();
-    let mut all = HashSet::new();
-
-    for claim in claims {
-        all.insert(claim.id);
-        for x in claim.top_left.x..claim.bottom_right.x {
-            for y in claim.top_left.y..claim.bottom_right.y {
-                *claim_map.entry((x, y)).or_insert(0) += 1;
-                if !claim_names.contains_key(&(x, y)) {
-                    claim_names.insert((x, y), claim.id);
-                } else {
-                    overlapping.insert(claim_names[&(x, y)]);
-                    overlapping.insert(claim.id);
-                }
-            }
-        }
-    }
-
-    Ok(claim_map.values().filter(|v| **v > 1).count())
+#[derive(Debug)]
+struct Cloth {
+    claim_map: HashMap<(u32, u32), u32>,
+    overlapping: HashSet<u32>,
+    all: HashSet<u32>,
 }
 
-/// Return the ID of the claim with no overlap with any others.
-fn no_overlap(input: &str) -> Result<u32, Error> {
-    let (results, errors): (Vec<_>, Vec<_>) = input
-        .lines()
-        .map(|l| l.parse::<Claim>())
-        .partition(Result::is_ok);
-    if !errors.is_empty() {
-        bail!(
-            "{:#?}",
-            errors
-                .into_iter()
-                .map(Result::unwrap_err)
-                .collect::<Vec<_>>()
-        );
-    }
-    let claims: Vec<_> = results.into_iter().map(Result::unwrap).collect();
+impl Cloth {
+    fn from(input: &str) -> Result<Self, Error> {
+        let (results, errors): (Vec<_>, Vec<_>) = input
+            .lines()
+            .map(|l| l.parse::<Claim>())
+            .partition(Result::is_ok);
+        if !errors.is_empty() {
+            bail!(
+                "{:#?}",
+                errors
+                    .into_iter()
+                    .map(Result::unwrap_err)
+                    .collect::<Vec<_>>()
+            );
+        }
+        let claims: Vec<_> = results.into_iter().map(Result::unwrap).collect();
 
-    let mut claim_map = HashMap::new();
-    let mut claim_names = HashMap::new();
-    let mut overlapping = HashSet::new();
-    let mut all = HashSet::new();
+        let mut claim_map = HashMap::new();
+        let mut claim_ids = HashMap::new();
+        let mut overlapping = HashSet::new();
+        let mut all = HashSet::new();
 
-    for claim in claims {
-        all.insert(claim.id);
-        for x in claim.top_left.x..claim.bottom_right.x {
-            for y in claim.top_left.y..claim.bottom_right.y {
-                *claim_map.entry((x, y)).or_insert(0) += 1;
-                // TODO(gib): Can we use claim_names.entry((x, y)) here as per clippy?
-                if claim_names.contains_key(&(x, y)) {
-                    overlapping.insert(claim.id);
-                    overlapping.insert(claim_names[&(x, y)]);
-                } else {
-                    claim_names.insert((x, y), claim.id);
+        for claim in claims {
+            all.insert(claim.id);
+            for x in claim.top_left.x..claim.bottom_right.x {
+                for y in claim.top_left.y..claim.bottom_right.y {
+                    *claim_map.entry((x, y)).or_insert(0) += 1;
+                    if !claim_ids.contains_key(&(x, y)) {
+                        claim_ids.insert((x, y), claim.id);
+                    } else {
+                        overlapping.insert(claim_ids[&(x, y)]);
+                        overlapping.insert(claim.id);
+                    }
                 }
             }
         }
+        Ok(Cloth { claim_map, overlapping, all, })
     }
 
-    let non_overlapping: HashSet<_> = all.difference(&overlapping).collect();
-    ensure!(
-        non_overlapping.len() == 1,
-        "Too many non-overlapping values found: {:?}",
-        non_overlapping
-    );
-    Ok(*all.difference(&overlapping).next().unwrap())
+    /// Given an input that is a newline-separated list of claims, work out how many inches of
+    /// the cloth have at least two overlapping claims.
+    fn overlaps(&self) -> Result<usize, Error> {
+        Ok(self.claim_map.values().filter(|v| **v > 1).count())
+    }
+
+    /// Return the ID of the claim with no overlap with any others.
+    fn no_overlap(&self) -> Result<u32, Error> {
+        let non_overlapping: HashSet<_> = self.all.difference(&self.overlapping).collect();
+        ensure!(
+            non_overlapping.len() == 1,
+            "Too many non-overlapping values found: {:?}",
+            non_overlapping
+        );
+        Ok(**non_overlapping.iter().next().unwrap())
+    }
 }
 
 #[cfg(test)]
@@ -184,8 +161,7 @@ mod tests {
         let input = "#1 @ 1,3: 4x4\n\
                      #2 @ 3,1: 4x4\n\
                      #3 @ 5,5: 2x2\n";
-        let output = overlaps(input);
-        assert_eq!(output.unwrap(), 4);
+        assert_eq!(Cloth::from(input).unwrap().overlaps().unwrap(), 4);
     }
 
     #[test]
@@ -198,7 +174,6 @@ mod tests {
         let input = "#1 @ 1,3: 4x4\n\
                      #2 @ 3,1: 4x4\n\
                      #3 @ 5,5: 2x2\n";
-        let output = no_overlap(input);
-        assert_eq!(output.unwrap(), 3);
+        assert_eq!(Cloth::from(input).unwrap().no_overlap().unwrap(), 3);
     }
 }
