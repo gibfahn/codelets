@@ -52,8 +52,8 @@ mod tests {
     }
 
     #[test]
-    fn first_answer() {
-        assert_eq!(first(), "459");
+    fn test_answer() {
+        assert_eq!(answer(), (String::from("459"), String::from("65474")));
     }
 
     #[test]
@@ -63,10 +63,5 @@ mod tests {
         assert_eq!(freq_repeat(0, "+3\n+3\n+4\n-2\n-4"), 10);
         assert_eq!(freq_repeat(0, "-6\n+3\n+8\n+5\n-6"), 5);
         assert_eq!(freq_repeat(0, "+7\n+7\n-2\n-7\n-4"), 14);
-    }
-
-    #[test]
-    fn second_answer() {
-        assert_eq!(second(), "65474");
     }
 }

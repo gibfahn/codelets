@@ -4,6 +4,8 @@
 use std::collections::{HashMap, HashSet};
 
 use failure::{bail, ensure, Error};
+use lazy_static::lazy_static;
+use regex::Regex;
 use std::str::FromStr;
 
 const INPUT: &str = include_str!("../input");
@@ -32,7 +34,10 @@ impl FromStr for Claim {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let re = regex::Regex::new(r"^#(\d+) @ (\d+),(\d+): (\d+)x(\d+)$").unwrap();
+        // Don't recompile regex for every string parse, improved `cargo run --release` 957ms -> 549 ms.
+        lazy_static! {
+            static ref re: Regex = Regex::new(r"^#(\d+) @ (\d+),(\d+): (\d+)x(\d+)$").unwrap();
+        }
 
         let matches = re.captures(s);
         if matches.is_none() {

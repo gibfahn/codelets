@@ -15,15 +15,10 @@ mod tests {
     fn first_example() {}
 
     #[test]
-    fn first_answer() {
-        assert_eq!(&first(), "");
+    fn test_answer() {
+        assert_eq!(answer(), (String::from(""), String::from("")));
     }
 
     #[test]
     fn second_example() {}
-
-    #[test]
-    fn second_answer() {
-        assert_eq!(&second(), "");
-    }
 }

@@ -80,8 +80,14 @@ mod tests {
     }
 
     #[test]
-    fn first_answer() {
-        assert_eq!(first(), "8398");
+    fn test_answer() {
+        assert_eq!(
+            answer(),
+            (
+                String::from("8398"),
+                String::from("hhvsdkatysmiqjxunezgwcdpr")
+            )
+        );
     }
 
     #[test]
@@ -94,10 +100,5 @@ mod tests {
                    axcye\n\
                    wvxyz\n";
         assert_eq!(common_letters(ids), Some(String::from("fgij")));
-    }
-
-    #[test]
-    fn second_answer() {
-        assert_eq!(second(), String::from("hhvsdkatysmiqjxunezgwcdpr"));
     }
 }
