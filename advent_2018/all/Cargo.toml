@@ -8,4 +8,5 @@ edition = "2018"
 one = { path = "../01" }
 two = { path = "../02" }
 three = { path = "../03" }
+four = { path = "../04" }
 template = { path = "../template" }

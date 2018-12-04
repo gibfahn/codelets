@@ -75,7 +75,6 @@ impl FromStr for Claim {
     }
 }
 
-
 #[derive(Debug)]
 struct Cloth {
     claim_map: HashMap<(u32, u32), u32>,
@@ -119,7 +118,11 @@ impl Cloth {
                 }
             }
         }
-        Ok(Cloth { claim_map, overlapping, all, })
+        Ok(Cloth {
+            claim_map,
+            overlapping,
+            all,
+        })
     }
 
     /// Given an input that is a newline-separated list of claims, work out how many inches of

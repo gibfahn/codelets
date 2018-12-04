@@ -19,14 +19,17 @@ struct Changes {
 impl Changes {
     fn from(input: &str) -> Self {
         Changes {
-            changes: input.lines().map(|change| change.parse::<i32>().unwrap()).collect()
+            changes: input
+                .lines()
+                .map(|change| change.parse::<i32>().unwrap())
+                .collect(),
         }
     }
 
     /// Takes an initial value and a newline-delineated set of numbers, and parses it into a set
     /// of numbers. Returns the sum of initial and the change numbers.
     fn freq(&self) -> i32 {
-        self.changes.iter().fold(0, |acc, n| acc + n)
+        self.changes.iter().sum()
     }
 
     /// Takes an initial value and a newline-delineated set of numbers, and applies the numbers
