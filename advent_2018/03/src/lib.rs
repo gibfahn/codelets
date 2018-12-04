@@ -1,9 +1,9 @@
 #![feature(external_doc)]
 #![doc(include = "../Question.md")]
 
-use std::collections::{HashMap, HashSet};
+use std::collections::{hash_map::Entry, HashMap, HashSet};
 
-use failure::{bail, ensure, Error};
+use failure::{bail, ensure, format_err, Error};
 use lazy_static::lazy_static;
 use regex::Regex;
 use std::str::FromStr;
@@ -39,11 +39,9 @@ impl FromStr for Claim {
             static ref re: Regex = Regex::new(r"^#(\d+) @ (\d+),(\d+): (\d+)x(\d+)$").unwrap();
         }
 
-        let matches = re.captures(s);
-        if matches.is_none() {
-            bail!("Failed to parse into a Claim: {:?}", s);
-        }
-        let matches = matches.unwrap();
+        let matches = re
+            .captures(s)
+            .ok_or_else(|| format_err!("Failed to parse into a Claim: {:?}", s))?;
 
         if matches.len() != 6 {
             bail!(
@@ -109,8 +107,8 @@ impl Cloth {
             for x in claim.top_left.x..claim.bottom_right.x {
                 for y in claim.top_left.y..claim.bottom_right.y {
                     *claim_map.entry((x, y)).or_insert(0) += 1;
-                    if !claim_ids.contains_key(&(x, y)) {
-                        claim_ids.insert((x, y), claim.id);
+                    if let Entry::Vacant(entry) = claim_ids.entry((x, y)) {
+                        entry.insert(claim.id);
                     } else {
                         overlapping.insert(claim_ids[&(x, y)]);
                         overlapping.insert(claim.id);

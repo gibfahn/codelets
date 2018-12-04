@@ -148,11 +148,9 @@ impl FromStr for Event {
             static ref re: Regex = Regex::new(r"^\[(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})\](?: Guard #)?(\d+)?( begins shift| falls asleep| wakes up)$").unwrap();
         }
 
-        let matches = re.captures(s);
-        if matches.is_none() {
-            bail!("Failed to parse into an Event: {:?}", s);
-        }
-        let matches = matches.unwrap();
+        let matches = re
+            .captures(s)
+            .ok_or_else(|| format_err!("Failed to parse into an Event: {:?}", s))?;
         let matches_len = matches.len();
 
         if matches_len != 7 && matches_len != 8 {

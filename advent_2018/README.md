@@ -32,6 +32,7 @@ cargo doc -p all --open
 
 - [shepmaster](https://github.com/shepmaster/adventofcode2016)
 - [carols10cents](https://github.com/carols10cents/adventofcode-rs)
+- [burntsushi](https://github.com/BurntSushi/advent-of-code)
 
 [Advent of Code]: http://adventofcode.com/
 [Rust]: https://www.rust-lang.org/

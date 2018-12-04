@@ -49,31 +49,6 @@ impl Changes {
     }
 }
 
-// fn freq(initial: i64, changes: &str) -> i64 {
-//     changes
-//         .lines()
-//         .map(|n| n.parse::<i64>().unwrap())
-//         .fold(initial, |acc, n| acc + n)
-// }
-
-// fn freq_repeat(initial: i64, changes: &str) -> i64 {
-//     let mut sum = initial;
-//     let mut seen: HashSet<i64> = HashSet::new();
-//     seen.insert(initial);
-
-//     for change in changes
-//         .lines()
-//         .map(|change| change.parse::<i64>().unwrap())
-//         .cycle()
-//     {
-//         sum += change;
-//         if !seen.insert(sum) {
-//             break;
-//         }
-//     }
-//     sum
-// }
-
 #[cfg(test)]
 mod tests {
     use super::*;
