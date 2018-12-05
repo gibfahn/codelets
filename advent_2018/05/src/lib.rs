@@ -1,6 +1,11 @@
 #![feature(external_doc)]
 #![doc(include = "../Question.md")]
 #![feature(const_fn)]
+#![feature(test)]
+
+extern crate test;
+
+use rayon::prelude::*;
 
 const INPUT: &str = include_str!("../input");
 
@@ -55,7 +60,7 @@ impl Polymer {
         ];
 
         ALPHABET
-            .iter()
+            .par_iter()
             .map(|(lower, upper)| {
                 let mut polymer = self.clone();
                 polymer.units.retain(|&c| c != *lower && c != *upper);
@@ -74,9 +79,7 @@ impl Polymer {
             {
                 self.units.remove(i + 1);
                 self.units.remove(i);
-                if i > 0 {
-                    i -= 1;
-                }
+                i = i.saturating_sub(1);
             } else {
                 i += 1;
             }
@@ -88,9 +91,10 @@ impl Polymer {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use test::Bencher;
 
     #[test]
-    fn first_example() {
+    fn examples() {
         let input = "dabAcCaCBAcCcaDA";
         assert_eq!(Polymer::from(input).react(), 10);
         assert_eq!(Polymer::from(input).remove_react(), 4);
@@ -100,4 +104,35 @@ mod tests {
     fn test_answer() {
         assert_eq!(answer(), (String::from("10598"), String::from("5312")));
     }
+
+    #[bench]
+    fn bench_first_example(b: &mut Bencher) {
+        let input = "dabAcCaCBAcCcaDA";
+        b.iter(|| {
+            Polymer::from(input).react()
+        })
+    }
+
+    #[bench]
+    fn bench_second_example(b: &mut Bencher) {
+        let input = "dabAcCaCBAcCcaDA";
+        b.iter(|| {
+            Polymer::from(input).remove_react()
+        })
+    }
+
+    #[bench]
+    fn bench_first_answer(b: &mut Bencher) {
+        b.iter(|| {
+            Polymer::from(INPUT).react()
+        })
+    }
+
+    #[bench]
+    fn bench_second_answer(b: &mut Bencher) {
+        b.iter(|| {
+            Polymer::from(INPUT).remove_react()
+        })
+    }
+
 }

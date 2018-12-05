@@ -5,3 +5,11 @@ authors = ["Gibson Fahnestock <gibfahn@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+rayon = "1.0.3"
+
+# [[bench]]
+# name = "my_benchmark"
+# harness = false
+
+# [dev-dependencies]
+# criterion = "0.2.5"
