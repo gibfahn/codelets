@@ -12,7 +12,7 @@ const INPUT: &str = include_str!("../input");
 pub fn answer() -> (String, String) {
     let polymer = Polymer::from(INPUT);
     (
-        polymer.clone().react().to_string(),
+        polymer.react().to_string(),
         polymer.remove_react().to_string(),
     )
 }
@@ -70,21 +70,32 @@ impl Polymer {
             .unwrap()
     }
 
-    fn react(mut self) -> usize {
-        let mut i = 0;
-        while i < self.units.len() - 1 {
-            if self.units[i] != self.units[i + 1]
-                && self.units[i].to_lowercase().to_string()
-                    == self.units[i + 1].to_lowercase().to_string()
+    fn react(&self) -> usize {
+        let unit_max = self.units.len() - 1;
+        let mut done = Vec::with_capacity(unit_max + 1);
+        done.push(self.units[0]);
+        let mut i = 1;
+        let mut done_i = 0;
+        while i <= unit_max {
+            if done[done_i] != self.units[i]
+                && done[done_i].to_lowercase().to_string()
+                    == self.units[i].to_lowercase().to_string()
             {
-                self.units.remove(i + 1);
-                self.units.remove(i);
-                i = i.saturating_sub(1);
+                done.pop();
+                if done_i == 0 {
+                    done.push(self.units[i+1]);
+                    i += 2;
+                } else {
+                    done_i -= 1;
+                    i += 1;
+                }
             } else {
+                done.push(self.units[i]);
+                done_i += 1;
                 i += 1;
             }
         }
-        self.units.len()
+        done_i + 1
     }
 }
 
