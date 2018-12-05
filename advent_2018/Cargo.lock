@@ -10,6 +10,7 @@ dependencies = [
 name = "all"
 version = "0.1.0"
 dependencies = [
+ "five 0.1.0",
  "four 0.1.0",
  "one 0.1.0",
  "template 0.1.0",
@@ -77,6 +78,10 @@ dependencies = [
  "syn 0.15.22 (registry+https://github.com/rust-lang/crates.io-index)",
  "synstructure 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
+
+[[package]]
+name = "five"
+version = "0.1.0"
 
 [[package]]
 name = "four"
