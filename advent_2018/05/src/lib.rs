@@ -78,8 +78,8 @@ impl Polymer {
         let mut done_i = 0;
         while i <= unit_max {
             if done[done_i] != self.units[i]
-                && done[done_i].to_lowercase().to_string()
-                    == self.units[i].to_lowercase().to_string()
+                && done[done_i].to_lowercase().next().unwrap()
+                    == self.units[i].to_lowercase().next().unwrap()
             {
                 done.pop();
                 if done_i == 0 {
