@@ -10,6 +10,7 @@ fn main() {
         three::answer,
         four::answer,
         five::answer,
+        six::answer,
         template::answer,
     ];
 
