@@ -13,6 +13,7 @@ dependencies = [
  "five 0.1.0",
  "four 0.1.0",
  "one 0.1.0",
+ "seven 0.1.0",
  "six 0.1.0",
  "template 0.1.0",
  "three 0.1.0",
@@ -267,6 +268,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "scopeguard"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "seven"
+version = "0.1.0"
 
 [[package]]
 name = "six"

@@ -11,6 +11,7 @@ fn main() {
         four::answer,
         five::answer,
         six::answer,
+        seven::answer,
         template::answer,
     ];
 

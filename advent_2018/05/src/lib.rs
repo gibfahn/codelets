@@ -83,7 +83,7 @@ impl Polymer {
             {
                 done.pop();
                 if done_i == 0 {
-                    done.push(self.units[i+1]);
+                    done.push(self.units[i + 1]);
                     i += 2;
                 } else {
                     done_i -= 1;
@@ -119,31 +119,23 @@ mod tests {
     #[bench]
     fn bench_first_example(b: &mut Bencher) {
         let input = "dabAcCaCBAcCcaDA";
-        b.iter(|| {
-            Polymer::from(input).react()
-        })
+        b.iter(|| Polymer::from(input).react())
     }
 
     #[bench]
     fn bench_second_example(b: &mut Bencher) {
         let input = "dabAcCaCBAcCcaDA";
-        b.iter(|| {
-            Polymer::from(input).remove_react()
-        })
+        b.iter(|| Polymer::from(input).remove_react())
     }
 
     #[bench]
     fn bench_first_answer(b: &mut Bencher) {
-        b.iter(|| {
-            Polymer::from(INPUT).react()
-        })
+        b.iter(|| Polymer::from(INPUT).react())
     }
 
     #[bench]
     fn bench_second_answer(b: &mut Bencher) {
-        b.iter(|| {
-            Polymer::from(INPUT).remove_react()
-        })
+        b.iter(|| Polymer::from(INPUT).remove_react())
     }
 
 }

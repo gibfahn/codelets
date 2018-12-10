@@ -11,4 +11,5 @@ three = { path = "../03" }
 four = { path = "../04" }
 five = { path = "../05" }
 six = { path = "../06" }
+seven = { path = "../07" }
 template = { path = "../template" }

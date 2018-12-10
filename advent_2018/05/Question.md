@@ -8,17 +8,21 @@ The polymer is formed by smaller units which, when triggered, react with each ot
 
 For example:
 
-    In aA, a and A react, leaving nothing behind.
-    In abBA, bB destroys itself, leaving aA. As above, this then destroys itself, leaving nothing.
-    In abAB, no two adjacent units are of the same type, and so nothing happens.
-    In aabAAB, even though aa and AA are of the same type, their polarities match, and so nothing happens.
+```text
+In aA, a and A react, leaving nothing behind.
+In abBA, bB destroys itself, leaving aA. As above, this then destroys itself, leaving nothing.
+In abAB, no two adjacent units are of the same type, and so nothing happens.
+In aabAAB, even though aa and AA are of the same type, their polarities match, and so nothing happens.
+```
 
 Now, consider a larger example, dabAcCaCBAcCcaDA:
 
+```text
 dabAcCaCBAcCcaDA  The first 'cC' is removed.
 dabAaCBAcCcaDA    This creates 'Aa', which is removed.
 dabCBAcCcaDA      Either 'cC' or 'Cc' are removed (the result is the same).
 dabCBAcaDA        No further actions can be taken.
+```
 
 After all possible reactions, the resulting polymer contains 10 units.
 
@@ -34,10 +38,12 @@ One of the unit types is causing problems; it's preventing the polymer from coll
 
 For example, again using the polymer dabAcCaCBAcCcaDA from above:
 
-    Removing all A/a units produces dbcCCBcCcD. Fully reacting this polymer produces dbCBcD, which has length 6.
-    Removing all B/b units produces daAcCaCAcCcaDA. Fully reacting this polymer produces daCAcaDA, which has length 8.
-    Removing all C/c units produces dabAaBAaDA. Fully reacting this polymer produces daDA, which has length 4.
-    Removing all D/d units produces abAcCaCBAcCcaA. Fully reacting this polymer produces abCBAc, which has length 6.
+```text
+Removing all A/a units produces dbcCCBcCcD. Fully reacting this polymer produces dbCBcD, which has length 6.
+Removing all B/b units produces daAcCaCAcCcaDA. Fully reacting this polymer produces daCAcaDA, which has length 8.
+Removing all C/c units produces dabAaBAaDA. Fully reacting this polymer produces daDA, which has length 4.
+Removing all D/d units produces abAcCaCBAcCcaA. Fully reacting this polymer produces abCBAc, which has length 6.
+```
 
 In this example, removing all C/c units was best, producing the answer 4.
 
