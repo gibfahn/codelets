@@ -10,12 +10,15 @@ dependencies = [
 name = "all"
 version = "0.1.0"
 dependencies = [
+ "eight 0.1.0",
  "five 0.1.0",
  "four 0.1.0",
+ "nine 0.1.0",
  "one 0.1.0",
  "seven 0.1.0",
  "six 0.1.0",
  "template 0.1.0",
+ "ten 0.1.0",
  "three 0.1.0",
  "two 0.1.0",
 ]
@@ -101,6 +104,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "eight"
+version = "0.1.0"
+
+[[package]]
 name = "either"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -166,6 +173,10 @@ dependencies = [
 name = "memoffset"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "nine"
+version = "0.1.0"
 
 [[package]]
 name = "nodrop"
@@ -303,6 +314,10 @@ dependencies = [
 
 [[package]]
 name = "template"
+version = "0.1.0"
+
+[[package]]
+name = "ten"
 version = "0.1.0"
 
 [[package]]

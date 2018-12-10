@@ -12,4 +12,7 @@ four = { path = "../04" }
 five = { path = "../05" }
 six = { path = "../06" }
 seven = { path = "../07" }
+eight = { path = "../08" }
+nine = { path = "../09" }
+ten = { path = "../10" }
 template = { path = "../template" }
