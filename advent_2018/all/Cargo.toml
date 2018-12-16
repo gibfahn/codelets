@@ -15,4 +15,8 @@ seven = { path = "../07" }
 eight = { path = "../08" }
 nine = { path = "../09" }
 ten = { path = "../10" }
+eleven = { path = "../11" }
+twelve = { path = "../12" }
+thirteen = { path = "../13" }
+fourteen = { path = "../14" }
 template = { path = "../template" }
