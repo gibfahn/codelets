@@ -1,5 +1,8 @@
 #![feature(external_doc)]
 #![doc(include = "../Question.md")]
+#![feature(test)]
+
+extern crate test;
 
 use failure::{bail, format_err, Error};
 use lazy_static::lazy_static;
@@ -168,41 +171,42 @@ impl fmt::Display for Coords {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use test::Bencher;
+
+    const EXAMPLE_INPUT: &str = "position=< 9,  1> velocity=< 0,  2>\n\
+                                 position=< 7,  0> velocity=<-1,  0>\n\
+                                 position=< 3, -2> velocity=<-1,  1>\n\
+                                 position=< 6, 10> velocity=<-2, -1>\n\
+                                 position=< 2, -4> velocity=< 2,  2>\n\
+                                 position=<-6, 10> velocity=< 2, -2>\n\
+                                 position=< 1,  8> velocity=< 1, -1>\n\
+                                 position=< 1,  7> velocity=< 1,  0>\n\
+                                 position=<-3, 11> velocity=< 1, -2>\n\
+                                 position=< 7,  6> velocity=<-1, -1>\n\
+                                 position=<-2,  3> velocity=< 1,  0>\n\
+                                 position=<-4,  3> velocity=< 2,  0>\n\
+                                 position=<10, -3> velocity=<-1,  1>\n\
+                                 position=< 5, 11> velocity=< 1, -2>\n\
+                                 position=< 4,  7> velocity=< 0, -1>\n\
+                                 position=< 8, -2> velocity=< 0,  1>\n\
+                                 position=<15,  0> velocity=<-2,  0>\n\
+                                 position=< 1,  6> velocity=< 1,  0>\n\
+                                 position=< 8,  9> velocity=< 0, -1>\n\
+                                 position=< 3,  3> velocity=<-1,  1>\n\
+                                 position=< 0,  5> velocity=< 0, -1>\n\
+                                 position=<-2,  2> velocity=< 2,  0>\n\
+                                 position=< 5, -2> velocity=< 1,  2>\n\
+                                 position=< 1,  4> velocity=< 2,  1>\n\
+                                 position=<-2,  7> velocity=< 2, -2>\n\
+                                 position=< 3,  6> velocity=<-1, -1>\n\
+                                 position=< 5,  0> velocity=< 1,  0>\n\
+                                 position=<-6,  0> velocity=< 2,  0>\n\
+                                 position=< 5,  9> velocity=< 1, -2>\n\
+                                 position=<14,  7> velocity=<-2,  0>\n\
+                                 position=<-3,  6> velocity=< 2, -1>\n";
 
     #[test]
     fn first_example() {
-        let input = "position=< 9,  1> velocity=< 0,  2>\n\
-                     position=< 7,  0> velocity=<-1,  0>\n\
-                     position=< 3, -2> velocity=<-1,  1>\n\
-                     position=< 6, 10> velocity=<-2, -1>\n\
-                     position=< 2, -4> velocity=< 2,  2>\n\
-                     position=<-6, 10> velocity=< 2, -2>\n\
-                     position=< 1,  8> velocity=< 1, -1>\n\
-                     position=< 1,  7> velocity=< 1,  0>\n\
-                     position=<-3, 11> velocity=< 1, -2>\n\
-                     position=< 7,  6> velocity=<-1, -1>\n\
-                     position=<-2,  3> velocity=< 1,  0>\n\
-                     position=<-4,  3> velocity=< 2,  0>\n\
-                     position=<10, -3> velocity=<-1,  1>\n\
-                     position=< 5, 11> velocity=< 1, -2>\n\
-                     position=< 4,  7> velocity=< 0, -1>\n\
-                     position=< 8, -2> velocity=< 0,  1>\n\
-                     position=<15,  0> velocity=<-2,  0>\n\
-                     position=< 1,  6> velocity=< 1,  0>\n\
-                     position=< 8,  9> velocity=< 0, -1>\n\
-                     position=< 3,  3> velocity=<-1,  1>\n\
-                     position=< 0,  5> velocity=< 0, -1>\n\
-                     position=<-2,  2> velocity=< 2,  0>\n\
-                     position=< 5, -2> velocity=< 1,  2>\n\
-                     position=< 1,  4> velocity=< 2,  1>\n\
-                     position=<-2,  7> velocity=< 2, -2>\n\
-                     position=< 3,  6> velocity=<-1, -1>\n\
-                     position=< 5,  0> velocity=< 1,  0>\n\
-                     position=<-6,  0> velocity=< 2,  0>\n\
-                     position=< 5,  9> velocity=< 1, -2>\n\
-                     position=<14,  7> velocity=<-2,  0>\n\
-                     position=<-3,  6> velocity=< 2, -1>\n";
-
         let output = "#...#..###\n\
                       #...#...#.\n\
                       #...#...#.\n\
@@ -212,7 +216,7 @@ mod tests {
                       #...#...#.\n\
                       #...#..###\n";
 
-        let (coords, time) = Sky::from(input).unwrap().message().unwrap();
+        let (coords, time) = Sky::from(EXAMPLE_INPUT).unwrap().message().unwrap();
 
         assert_eq!(
             coords.to_string(),
@@ -242,6 +246,14 @@ mod tests {
         assert_eq!(answer(), (String::from(output), 10515.to_string()));
     }
 
-    #[test]
-    fn second_example() {}
+    #[bench]
+    fn bench_example(b: &mut Bencher) {
+        b.iter(|| Sky::from(EXAMPLE_INPUT).unwrap().message().unwrap())
+    }
+
+    #[bench]
+    fn bench_answer(b: &mut Bencher) {
+        b.iter(|| Sky::from(INPUT).unwrap().message().unwrap())
+    }
+
 }
