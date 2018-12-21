@@ -20,7 +20,7 @@ pub fn answer() -> (String, String) {
     (coords.to_string(), time.to_string())
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 struct Point {
     position: (i32, i32),
     velocity: (i32, i32),
@@ -29,21 +29,14 @@ struct Point {
 #[derive(Debug, Clone)]
 struct Sky {
     points: Vec<Point>,
+    time: i32,
+    coords: Coords,
 }
 
+#[derive(Debug, Clone)]
 struct Coords {
     list: Vec<(i32, i32)>,
     map: HashSet<(i32, i32)>,
-}
-
-impl Point {
-    /// Work out where a Point will have moved to at time t.
-    fn position_at(&self, t: i32) -> (i32, i32) {
-        (
-            self.position.0 + self.velocity.0 * t,
-            self.position.1 + self.velocity.1 * t,
-        )
-    }
 }
 
 impl FromStr for Point {
@@ -83,25 +76,37 @@ impl Sky {
                     .collect::<Vec<_>>()
             );
         }
+
+        let points = results
+            .into_iter()
+            .map(Result::unwrap)
+            .collect::<Vec<Point>>();
+
+        let coords = Coords::from(points.iter().map(|p| p.position).collect());
+
         Ok(Sky {
-            points: results
-                .into_iter()
-                .map(Result::unwrap)
-                .collect::<Vec<Point>>(),
+            points,
+            time: 0,
+            coords,
         })
     }
 
-    fn coords_at(&self, t: i32) -> Coords {
-        Coords::from(self.points.iter().map(|p| p.position_at(t)).collect())
+    fn inc_time(&mut self) {
+        self.time += 1;
+        self.coords.map.clear();
+        for (p, v) in self.coords.list.iter_mut().zip(self.points.iter()) {
+            std::mem::replace(p, (p.0 + v.velocity.0, p.1 + v.velocity.1));
+            self.coords.map.insert(*p);
+        }
     }
 
     /// Return the message in the sky (as a coordinate list, convert to string to show the
     /// message) and the time at which it was generated.
-    fn message(&self) -> Result<(Coords, i32), Error> {
-        for t in 0..i32::MAX {
-            let coords = self.coords_at(t);
-            if coords.all_touching() {
-                return Ok((coords, t));
+    fn message(&mut self) -> Result<(Coords, i32), Error> {
+        while self.time < i32::MAX {
+            self.inc_time();
+            if self.coords.all_touching() {
+                return Ok((self.coords.clone(), self.time));
             }
         }
         Err(format_err!("Didn't find a point where they all touch."))
