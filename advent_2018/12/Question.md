@@ -1,4 +1,4 @@
---- Day 12: Subterranean Sustainability ---
+# Day 12: Subterranean Sustainability
 
 The year 518 is significantly more underground than your history books implied. Either that, or you've arrived in a vast cavern network under the North Pole.
 
@@ -18,9 +18,9 @@ It's not clear what these plants are for, but you're sure it's important, so you
 
 For example, given the following input:
 
+```text
 initial state: #..#.#..##......###...###
 
-```text
 ...## => #
 ..#.. => #
 .#... => #
@@ -72,3 +72,15 @@ After one generation, only seven plants remain. The one in pot 0 matched the rul
 In this example, after 20 generations, the pots shown as # contain plants, the furthest left of which is pot -2, and the furthest right of which is pot 34. Adding up all the numbers of plant-containing pots after the 20th generation produces 325.
 
 After 20 generations, what is the sum of the numbers of all pots which contain a plant?
+
+Your puzzle answer was 2349.
+
+## Part Two
+
+You realize that 20 generations aren't enough. After all, these plants will need to last another 1500 years to even reach your timeline, not to mention your future.
+
+After fifty billion (50000000000) generations, what is the sum of the numbers of all pots which contain a plant?
+
+Your puzzle answer was 2100000001168.
+
+Both parts of this puzzle are complete! They provide two gold stars: **
