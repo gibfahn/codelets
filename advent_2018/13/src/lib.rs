@@ -1,7 +1,6 @@
 #![feature(external_doc)]
 #![doc(include = "../Question.md")]
 
-use std::cmp::Ordering;
 use std::collections::{hash_map::Entry, HashMap};
 use std::fmt;
 
@@ -169,10 +168,7 @@ impl Map {
         loop {
             let mut carts_vec: Vec<(Point, Cart)> =
                 self.carts.iter().map(|(&p, &c)| (p, c)).collect();
-            carts_vec.sort_by(|(p1, _), (p2, _)| match p1.y.cmp(&p2.y) {
-                Ordering::Equal => p1.x.cmp(&p2.x),
-                a => a,
-            });
+            carts_vec.sort_by_key(|(p, _)| (p.y, p.x));
             let mut output = None;
             for (point, cart) in &carts_vec {
                 if output.is_some() && &output.unwrap() == point {
