@@ -23,6 +23,8 @@ fn second(input: &str) -> i32 {
         .map(|i| {
             let mut total = 0;
             let mut x = i.parse::<i32>().unwrap();
+            // This is a do while loop, so all the logic is in the condition.
+            #[allow(clippy::while_immutable_condition)]
             while {
                 x = x / 3 - 2;
                 x > 0

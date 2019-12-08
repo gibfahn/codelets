@@ -1,6 +1,7 @@
 use snafu::{OptionExt, ResultExt, Snafu};
 use std::{
     cmp::{max, min},
+    convert::TryInto,
     ops::AddAssign,
     str::FromStr,
     usize,
@@ -21,14 +22,97 @@ pub enum Error {
     },
     #[snafu(display("No lines intersect with each other."))]
     NoIntersections,
+
+    #[snafu(display("Conversion failed: {}", source))]
+    ConversionError { source: std::num::TryFromIntError },
 }
 
 pub fn answer() -> (String, String) {
     (
         first(INPUT).unwrap().to_string(),
-        String::from(""),
-        // second(INPUT, 19_690_720).unwrap().to_string(),
+        second(INPUT).unwrap().to_string(),
     )
+}
+
+fn first(input: &str) -> Result<usize, Error> {
+    get_intersections(input)?
+        .iter()
+        .map(|i| i.point.manhattan_distance())
+        .filter(|&n| n > 0)
+        .min()
+        .ok_or(Error::NoIntersections {})
+}
+
+fn second(input: &str) -> Result<usize, Error> {
+    get_intersections(input)?
+        .iter()
+        .map(|i| {
+            length_until(&i.wire_a, i.point).unwrap() + length_until(&i.wire_b, i.point).unwrap()
+        })
+        .filter(|&n| n > 0)
+        .min()
+        .ok_or(Error::NoIntersections {})
+}
+
+fn length_until(wire: &[Line], point: Point) -> Result<usize, Error> {
+    let mut length = 0;
+    for segment in wire.iter() {
+        if segment.touches(point) {
+            let delta: usize = match segment.direction.orientation() {
+                Orientation::Horizontal => (point.x - segment.a.x).abs(),
+                Orientation::Vertical => (point.y - segment.a.y).abs(),
+            }
+            .try_into()
+            .context(ConversionError {})?;
+            length += delta;
+            break;
+        } else {
+            length += segment.length;
+        }
+    }
+    Ok(length)
+}
+
+fn get_intersections(input: &str) -> Result<Vec<Intersection>, Error> {
+    let wires = input
+        .lines()
+        .map(|line| {
+            let mut position = Point::default();
+            line.split_terminator(',')
+                .map(|i| i.parse::<WireSegment>())
+                .map(|segment_result| {
+                    segment_result
+                        .and_then(|segment| Ok(Line::from_segment(&segment, &mut position)))
+                })
+                .collect::<Result<Vec<_>, Error>>()
+        })
+        .collect::<Result<Vec<_>, Error>>()?;
+
+    let mut intersections = Vec::new();
+
+    for (i, wire) in wires.iter().enumerate() {
+        for other_wire in wires.iter().skip(i + 1) {
+            for line in wire {
+                for other_line in other_wire {
+                    if let Some(intersection_point) = line.intersection_point(other_line) {
+                        intersections.push(Intersection {
+                            point: intersection_point,
+                            wire_a: wire.clone(),
+                            wire_b: other_wire.clone(),
+                        });
+                    }
+                }
+            }
+        }
+    }
+    Ok(intersections)
+}
+
+#[derive(Debug, PartialEq, Clone)]
+struct Intersection {
+    point: Point,
+    wire_a: Vec<Line>,
+    wire_b: Vec<Line>,
 }
 
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -62,63 +146,7 @@ struct Line {
     a: Point,
     b: Point,
     direction: Direction,
-}
-
-fn first(input: &str) -> Result<usize, Error> {
-    let wires = input
-        .lines()
-        .map(|line| {
-            let mut position = Point::default();
-            line.split_terminator(',')
-                .map(|i| i.parse::<WireSegment>())
-                .map(|segment_result| {
-                    segment_result
-                        .and_then(|segment| Ok(Line::from_segment(&segment, &mut position)))
-                })
-                .collect::<Result<Vec<_>, Error>>()
-        })
-        .collect::<Result<Vec<_>, Error>>()?;
-
-    let mut min = usize::MAX;
-    for (i, wire) in wires.iter().enumerate() {
-        for other_wire in wires.iter().skip(i + 1) {
-            for line in wire {
-                for other_line in other_wire {
-                    if let Some(intersection) = line.intersection_point(other_line) {
-                        let distance = intersection.manhattan_distance();
-                        if distance > 0 && distance < min {
-                            min = distance;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    if min == usize::MAX {
-        NoIntersections {}.fail()?;
-    }
-
-    Ok(min)
-
-    // Ok(wires
-    //     .iter()
-    //     .enumerate()
-    //     .flat_map(|(i, lines)| {
-    //         lines.iter().flat_map(|line| {
-    //             wires
-    //                 .iter()
-    //                 .skip(i + 1)
-    //                 .flat_map(|other_lines| {
-    //                     other_lines
-    //                         .iter()
-    //                         .filter_map(|other_line| other_line.intersection_point(&line))
-    //                 })
-    //         })
-    //     })
-    //     .map(|a| a.manhattan_distance())
-    //     .min()
-    //     .context(NoIntersections)?)
+    length: usize,
 }
 
 impl Line {
@@ -129,6 +157,22 @@ impl Line {
             a: old_position,
             b: *position,
             direction: segment.direction,
+            length: segment.length,
+        }
+    }
+
+    fn touches(&self, point: Point) -> bool {
+        match self.direction.orientation() {
+            Orientation::Horizontal => {
+                point.y == self.a.y
+                    && point.x >= min(self.a.x, self.b.x)
+                    && point.x <= max(self.a.x, self.b.x)
+            }
+            Orientation::Vertical => {
+                point.x == self.a.x
+                    && point.y >= min(self.a.y, self.b.y)
+                    && point.y <= max(self.a.y, self.b.y)
+            }
         }
     }
 
@@ -169,7 +213,7 @@ impl Line {
 }
 
 impl Direction {
-    fn orientation(&self) -> Orientation {
+    fn orientation(self) -> Orientation {
         match self {
             Direction::Left | Direction::Right => Orientation::Horizontal,
             Direction::Up | Direction::Down => Orientation::Vertical,
@@ -193,27 +237,6 @@ impl AddAssign<WireSegment> for Point {
         }
     }
 }
-
-// fn second(input: &str, output: i32) -> Result<i32, Error> {
-//     let int_codes = input
-//         .trim()
-//         .split_terminator(',')
-//         .map(|i| i.parse::<i32>().context(InvalidInput))
-//         .collect::<Result<Vec<_>, Error>>()?;
-
-//     for i in 0..100 {
-//         for j in 0..100 {
-//             let mut int_codes = int_codes.clone();
-//             *int_codes.get_mut_error(1)? = i;
-//             *int_codes.get_mut_error(2)? = j;
-//             run_program(&mut int_codes)?;
-//             if output == int_codes.get_error(0)? {
-//                 return Ok(int_codes.get_error(1)? * 100 + int_codes.get_error(2)?);
-//             }
-//         }
-//     }
-//     Err(Error::OutputNotFound)
-// }
 
 impl FromStr for Direction {
     type Err = Error;
@@ -275,7 +298,7 @@ mod tests {
 
     #[test]
     fn second_examples() {
-        assert_eq!(second("R8,U5,L5,D3,\nU7,R6,D4,L4,"), Ok(40));
+        assert_eq!(second("R8,U5,L5,D3,\nU7,R6,D4,L4,"), Ok(30));
         assert_eq!(
             second("R75,D30,R83,U83,L12,D49,R71,U7,L72\nU62,R66,U55,R34,D71,R55,D58,R83"),
             Ok(610)
@@ -288,8 +311,8 @@ mod tests {
         );
     }
 
-    // #[test]
-    // fn second_real() {
-    //     assert_eq!(second(INPUT, 19_690_720), Ok(8226));
-    // }
+    #[test]
+    fn second_real() {
+        assert_eq!(second(INPUT), Ok(35038));
+    }
 }

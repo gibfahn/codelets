@@ -28,7 +28,7 @@ trait GetChecked {
 
 impl GetChecked for Vec<i32> {
     fn get_error(&self, i: usize) -> Result<i32, Error> {
-        self.get(i).map(|i| *i).context(OutOfRange { position: i })
+        self.get(i).copied().context(OutOfRange { position: i })
     }
 
     fn get_mut_error(&mut self, i: usize) -> Result<&mut i32, Error> {
