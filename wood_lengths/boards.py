@@ -87,8 +87,10 @@ def pack_boards(total_lengths):
                 board_usages.append(blank_board())
             most_full_usable_board_index = max(
                 filter(
-                    lambda enum_usage: LENGTHS[board] > enum_usage[1][TOTAL] +
-                    length + ((len(enum_usage[1][SEGMENTS]) - 1) * KERF),
+                    lambda enum_usage: LENGTHS[board]
+                    > enum_usage[1][TOTAL]
+                    + length
+                    + ((len(enum_usage[1][SEGMENTS]) - 1) * KERF),
                     enumerate(board_usages),
                 ),
                 key=lambda enum_usage: enum_usage[1][TOTAL],
@@ -118,7 +120,8 @@ def print_boards(boards_needed):
         wastage = sum((LENGTHS[board] - usage[TOTAL] for usage in usages))
         screws = total_segments * SCREWS[board]
         print(
-            f"{board}: {len(usages)} ({SEGMENTS}: {total_segments} | wastage: {wastage} | screws: {screws})")
+            f"{board}: {len(usages)} ({SEGMENTS}: {total_segments} | wastage: {wastage} | screws: {screws})"
+        )
         for usage in usages:
             print(
                 f"  {usage[TOTAL]} => {usage[SEGMENTS]} - {LENGTHS[board] - usage[TOTAL]}"
