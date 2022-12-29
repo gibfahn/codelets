@@ -32,6 +32,7 @@ impl Trees {
         count
     }
 
+    /// This function counts how many trees are visible from this tree position.
     fn visible(&self, mut x: usize, mut y: usize, height: u32, direction: Direction) -> bool {
         loop {
             (x, y) = match direction {
