@@ -1,6 +1,7 @@
-use std::collections::HashSet;
+use std::{cmp::Ordering, collections::HashSet};
 
-const INPUT: &str = include_str!("./input");
+pub const DAY: u8 = 9;
+pub const INPUT: &str = include_str!("./input");
 
 #[derive(Debug, Default, Clone, PartialEq, Eq, Hash)]
 struct Coord {
@@ -15,13 +16,6 @@ impl Coord {
             Direction::Down => self.y -= 1,
             Direction::Left => self.x -= 1,
             Direction::Right => self.x += 1,
-        }
-    }
-
-    fn from_tuple(tuple: (i32, i32)) -> Self {
-        Self {
-            x: tuple.0,
-            y: tuple.1,
         }
     }
 }
@@ -45,16 +39,14 @@ impl Direction {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 struct Rope {
-    head: Coord,
-    tail: Coord,
+    coords: Vec<Coord>,
     tail_visited: HashSet<Coord>,
 }
 
 impl Rope {
     fn follow_motions(&mut self, input: &str) {
-        self.tail_visited.insert(self.tail.clone());
         for line in input.lines() {
             let mut line_chars = line.chars();
             let direction = Direction::from_char(line_chars.next().unwrap());
@@ -70,41 +62,58 @@ impl Rope {
         self.tail_visited.len()
     }
 
+    /// If the head is ever two steps directly up, down, left, or right from the tail, the tail must also move one step in that direction so it remains close enough.
+    /// Otherwise, if the head and tail aren't touching and aren't in the same row or column, the tail always moves one step diagonally to keep up.
     fn move_rope(&mut self, direction: Direction) {
-        self.head.move_direction(direction);
+        self.coords[0].move_direction(direction);
 
-        if (self.head.x - self.tail.x).abs() <= 1 && (self.head.y - self.tail.y).abs() <= 1 {
-            return;
+        for i in 1..self.coords.len() {
+            let tail = &self.coords[i];
+            let head = &self.coords[i - 1];
+            if (head.x - tail.x).abs() <= 1 && (head.y - tail.y).abs() <= 1 {
+                return;
+            }
+
+            let x = match head.x.cmp(&tail.x) {
+                Ordering::Less => tail.x - 1,
+                Ordering::Equal => tail.x,
+                Ordering::Greater => tail.x + 1,
+            };
+
+            let y = match head.y.cmp(&tail.y) {
+                Ordering::Less => tail.y - 1,
+                Ordering::Equal => tail.y,
+                Ordering::Greater => tail.y + 1,
+            };
+
+            self.coords[i] = Coord { x, y };
         }
 
-        if ((direction == Direction::Left || direction == Direction::Right)
-            && self.head.y == self.tail.y)
-            || ((direction == Direction::Up || direction == Direction::Down)
-                && self.head.x == self.tail.x)
-        {
-            self.tail.move_direction(direction);
-        } else {
-            let (x, y) = (self.head.x, self.head.y);
-            self.tail = Coord::from_tuple(match direction {
-                Direction::Up => (x, y - 1),
-                Direction::Down => (x, y + 1),
-                Direction::Left => (x + 1, y),
-                Direction::Right => (x - 1, y),
-            });
-        }
+        self.tail_visited
+            .insert(self.coords.last().unwrap().clone());
+    }
 
-        self.tail_visited.insert(self.tail.clone());
+    fn with_length(length: usize) -> Self {
+        let mut tail_visited = HashSet::new();
+        tail_visited.insert(Coord { x: 0, y: 0 });
+        let coords = vec![Coord::default(); length];
+        Self {
+            tail_visited,
+            coords,
+        }
     }
 }
 
 pub fn first(input: &str) -> String {
-    let mut rope = Rope::default();
+    let mut rope = Rope::with_length(2);
     rope.follow_motions(input);
     rope.count_tail_visited().to_string()
 }
 
-pub fn second() -> String {
-    todo!()
+pub fn second(input: &str) -> String {
+    let mut rope = Rope::with_length(10);
+    rope.follow_motions(input);
+    rope.count_tail_visited().to_string()
 }
 
 #[cfg(test)]
@@ -114,11 +123,11 @@ mod tests {
     fn check() {
         assert_eq!(
             dbg!(first(INPUT)),
-            advent_of_code::solve(2022, 9, 1, INPUT).unwrap()
+            advent_of_code::solve(2022, DAY, 1, INPUT).unwrap()
         );
         assert_eq!(
-            dbg!(second()),
-            advent_of_code::solve(2022, 9, 2, INPUT).unwrap()
+            dbg!(second(INPUT)),
+            advent_of_code::solve(2022, DAY, 2, INPUT).unwrap()
         );
     }
 
@@ -133,5 +142,15 @@ D 1
 L 5
 R 2";
         assert_eq!(dbg!(first(input)), "13");
+        let input = "R 5
+U 8
+L 8
+D 3
+R 17
+D 10
+L 25
+U 20";
+
+        assert_eq!(dbg!(second(input)), "36");
     }
 }
