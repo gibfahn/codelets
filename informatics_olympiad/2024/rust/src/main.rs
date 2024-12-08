@@ -88,7 +88,8 @@ fn find_substring_faster(mut n: i32, substring: &str) -> (usize, usize) {
     let mut s = String::new();
     let mut length = 0;
 
-    let substring_prefixes: Vec<String> = (substring.len() - 1..=1)
+    let substring_prefixes: Vec<String> = (1..substring.len())
+        .rev()
         .map(|n| substring.chars().take(n).collect())
         .collect();
 
