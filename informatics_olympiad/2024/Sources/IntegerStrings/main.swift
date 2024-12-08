@@ -1,5 +1,3 @@
-#!/usr/bin/env swift
-
 import Foundation
 
 // Uncomment to unbuffer stdout so we can see print debugging.
@@ -29,7 +27,7 @@ Sample run
 999 11
 1
 */
-func nth_digit(n: Int, i: Int) -> Int {
+public func nthDigit(n: Int, i: Int) -> Int {
     var n = n
     var s = String()
     while s.count < i {
@@ -39,7 +37,7 @@ func nth_digit(n: Int, i: Int) -> Int {
     return s[s.index(s.startIndex, offsetBy: i - 1)].wholeNumberValue!
 }
 
-assert(nth_digit(n: 999, i: 11) == 1, "Expected nth_digit(n: 999, i: 11) to equal '1', but it was '\(nth_digit(n: 999, i: 11))'")
+print("11th digit counting from 999 [should be 1]:", nthDigit(n: 999, i: 11))
 
 // --------------------------------------------------
 
@@ -49,7 +47,7 @@ assert(nth_digit(n: 999, i: 11) == 1, "Expected nth_digit(n: 999, i: 11) to equa
  How many occurrences of the digit 5 appear in the first 101
 digits?
  */
-func count_5s(n: Int, i: Int) -> Int {
+public func countFives(n: Int, i: Int) -> Int {
     var n = n
     var s = String()
 
@@ -62,9 +60,7 @@ func count_5s(n: Int, i: Int) -> Int {
     return fives.count
 }
 
-assert(count_5s(n: 1, i: 101) == 11, "Expected count_5s(n: 1, i: 101) to equal '11', but it was '\(count_5s(n: 1, i: 101))'")
 
-print("5s in 101 digits: \(count_5s(n: 1, i: 101))")
 
 // --------------------------------------------------
 
@@ -78,7 +74,7 @@ Consider the string generated when n
 positions 1 and 9 inclusive.String.IndexString.Index
 Where does the substring 11111 first appear? Where does the substring 987654321 first appear?
 */
-func find_substring_naive(n: Int, substring: String) -> (Int, Int) {
+public func findSubstringNaive(n: Int, substring: String) -> (Int, Int) {
     var n = n
     var s = String()
 
@@ -95,13 +91,8 @@ func find_substring_naive(n: Int, substring: String) -> (Int, Int) {
     }
 }
 
-assert(find_substring_naive(n: 1, substring: "123456789") == (1,9), "Expected find_substring_naive(n: 1, substring: \"123456789\") to equal '(1,9)', but it was '\(find_substring_naive(n: 1, substring: "123456789"))'")
-assert(find_substring_naive(n: 1, substring: "11111") == (223,227))
-
-print("Substring 11111: \(find_substring_naive(n: 1, substring: "11111"))")
-
 /**
-Naive solution to this problem:
+Slightly better solution to this problem:
 
 Consider the string generated when n
 =
@@ -109,7 +100,7 @@ Consider the string generated when n
 positions 1 and 9 inclusive.String.IndexString.Index
 Where does the substring 11111 first appear? Where does the substring 987654321 first appear?
 */
-func find_substring_fast(n: Int, substring: String) -> (Int, Int) {
+public func findSubstringFaster(n: Int, substring: String) -> (Int, Int) {
     var n = n
     var s = String()
     var length = 0
@@ -143,7 +134,3 @@ func find_substring_fast(n: Int, substring: String) -> (Int, Int) {
         n += 1
     }
 }
-
-assert(find_substring_fast(n: 1, substring: "123456789") == (1,9), "Expected find_substring_fast(n: 1, substring: \"123456789\") to equal '(1,9)', but it was '\(find_substring_fast(n: 1, substring: "123456789"))'")
-assert(find_substring_naive(n: 1, substring: "11111") == (223,227))
-assert(find_substring_naive(n: 1, substring: "987654321") == (1677777779, 1677777787))
