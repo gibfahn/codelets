@@ -21,6 +21,10 @@ DEBUG=1 cargo run
 
 # Run tests to check the solution works for the exam questions:
 cargo test
+
+# Debug a specific failure without having to manually type input:
+DEBUG=1 c r <<<"25 15
+3 13"
 ```
 */
 
@@ -198,7 +202,7 @@ impl Hive {
     face a new edge before finally jumping b hexagons.
     */
     fn skirmishes(&mut self) {
-        for skirmish in 0..self.skirmishes {
+        for skirmish in 1..=self.skirmishes {
             debug!("Skirmish {skirmish}");
             self.skirmish(0);
             self.skirmish(1);
@@ -218,10 +222,18 @@ impl Hive {
 
     fn take_ownership(&mut self, hexagon: usize, edge: usize, owner: Colony) {
         self.hexagons[hexagon].edges[edge].owner = Some(owner);
-        debug!("{owner:?} took ownership of ({hexagon}, {edge})");
+        debug!(
+            "{owner:?} took ownership of ({hexagon}, {edge}): Hexagon {h}, edge {e}",
+            h = hexagon + 1,
+            e = edge + 1
+        );
         if let Some((other_hexagon, other_edge)) = Hive::find_other_hexagon_edge(hexagon, edge) {
             self.hexagons[other_hexagon].edges[other_edge].owner = Some(owner);
-            debug!("{owner:?} also took ownership of ({other_hexagon}, {other_edge})");
+            debug!(
+                "{owner:?} also took ownership of ({other_hexagon}, {other_edge}): Hexagon {h}, edge {e}",
+                h = other_hexagon + 1,
+                e = other_edge + 1
+            );
         }
     }
 
@@ -238,7 +250,7 @@ impl Hive {
     for the red colony and highest for the blue colony.
     */
     fn feuds(&mut self) {
-        for feud in 0..self.feuds {
+        for feud in 1..=self.feuds {
             debug!("Feud {feud}");
             self.feud(0);
             self.feud(1);
@@ -415,7 +427,7 @@ impl Hive {
 impl Display for Hive {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         writeln!(f, "Hive:")?;
-        writeln!(f, "     123456")?;
+        writeln!(f, "     123456 C")?;
         for (i, hexagon) in self.hexagons.iter().enumerate() {
             writeln!(f, " {j:>2}: {hexagon}", j = i + 1)?;
         }
@@ -491,7 +503,15 @@ impl Display for Hexagon {
                 None => write!(f, "·")?,
             }
         }
-        Ok(())
+        write!(
+            f,
+            " {}",
+            match self.controlled_by() {
+                Some(Colony::Red) => 'R',
+                Some(Colony::Blue) => 'B',
+                None => '·',
+            }
+        )
     }
 }
 
@@ -534,6 +554,41 @@ mod tests {
         assert_eq!((6, 6), (red, blue));
     }
 
+    /**
+    There are 15 tests used to check 2(a). For each
+    test you will need to type in two lines, each
+    containing two integers.
+    For each test you should see two lines output
+    each with a single integer. Both integers need to
+    be correct to score marks.
+    Tests must terminate in 1 second to receive
+    marks.
+    */
+    #[test]
+    fn test_question_2a_markscheme() {
+        // (expected_outputs, inputs)
+        let test_cases = [
+            ((6, 6), (9, 3, 3, 1)),
+            ((0, 0), (2, 11, 0, 0)),
+            ((1, 2), (1, 1, 1, 0)),
+            ((1, 3), (1, 1, 4, 0)),
+            ((9, 8), (2, 23, 28, 0)),
+            ((17, 7), (11, 5, 20, 0)),
+            ((1, 24), (25, 24, 999, 0)),
+            ((2, 2), (2, 11, 0, 1)),
+            ((14, 9), (16, 25, 7, 3)),
+            ((10, 13), (25, 15, 3, 13)),
+            ((9, 13), (18, 6, 53, 3)),
+            ((7, 16), (25, 24, 11, 3)),
+            ((7, 7), (7, 1, 73, 3)),
+            ((9, 2), (1, 2, 41, 15)),
+            ((5, 3), (1, 14, 31, 19)),
+        ];
+        for (expected, (r, b, s, f)) in test_cases {
+            assert_eq!(expected, play_game_and_return_controlled(r, b, s, f));
+        }
+    }
+
     /// Show the hive after 0 skirmishes and 7 feuds, making it clear which edges are owned by each colony.
     #[test]
     fn test_question_2b() {
@@ -543,32 +598,32 @@ mod tests {
         let hive_str = hive.to_string();
         let expected = "\
 Hive:
-     123456
-  1: ·R····
-  2: ····R·
-  3: ·R····
-  4: ····R·
-  5: ··R···
-  6: ·R····
-  7: ····R·
-  8: ·R····
-  9: ····R·
- 10: ·····R
- 11: ·RB···
- 12: ····R·
- 13: ·B····
- 14: ····B·
- 15: ··B···
- 16: ··BR·B
- 17: ··B···
- 18: ··B···
- 19: ··B···
- 20: ·····B
- 21: R·····
- 22: ·····B
- 23: ·····B
- 24: ·····B
- 25: ·····B
+     123456 C
+  1: ·R···· R
+  2: ····R· R
+  3: ·R···· R
+  4: ····R· R
+  5: ··R··· R
+  6: ·R···· R
+  7: ····R· R
+  8: ·R···· R
+  9: ····R· R
+ 10: ·····R R
+ 11: ·RB··· ·
+ 12: ····R· R
+ 13: ·B···· B
+ 14: ····B· B
+ 15: ··B··· B
+ 16: ··BR·B B
+ 17: ··B··· B
+ 18: ··B··· B
+ 19: ··B··· B
+ 20: ·····B B
+ 21: R····· R
+ 22: ·····B B
+ 23: ·····B B
+ 24: ·····B B
+ 25: ·····B B
 ";
 
         assert_eq!(expected, hive_str);
