@@ -7,8 +7,8 @@ Has no package dependencies, and is a single file.
 
 You can copy this into <https://play.rust-lang.org> and run the tests or run the main code itself.
 
-Here's a permalink to the current iteration of the code: <https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=2afbfae256c6161ac3432ff4b2ed367c>
-And a link to the code as a gist for easier online browsing: <https://gist.github.com/rust-play/2afbfae256c6161ac3432ff4b2ed367c>
+Here's a permalink to the current iteration of the code: <https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=640ec3747cd552292264428754a8e43a>
+And a link to the code as a gist for easier online browsing: <https://gist.github.com/rust-play/640ec3747cd552292264428754a8e43a>
 
 ## Run locally
 
@@ -29,6 +29,11 @@ DEBUG=1 c r <<<"25 15
 */
 
 use std::{array, cmp::Ordering, fmt::Display, io};
+
+/// Number of hexagons in the hive.
+const HEXAGONS: usize = 25;
+/// Number of edges in each hexagon.
+const EDGES: usize = 6;
 
 /**
 Write a program that plays the Game of Drones.
@@ -78,7 +83,7 @@ fn play_game_and_return_controlled(r: usize, b: usize, s: usize, f: usize) -> (u
 
 #[derive(Debug)]
 struct Hive {
-    hexagons: [Hexagon; 25],
+    hexagons: [Hexagon; HEXAGONS],
     drones: [Drone; 2],
     /// Number of skirmishes to do
     skirmishes: usize,
@@ -88,7 +93,7 @@ struct Hive {
 
 #[derive(Debug, Default, Clone)]
 struct Hexagon {
-    edges: [Edge; 6],
+    edges: [Edge; EDGES],
 }
 
 #[derive(Debug, Default, Clone)]
@@ -115,17 +120,17 @@ impl Drone {
         match self.colony {
             // 60 degrees clockwise
             Colony::Red => {
-                self.edge = (self.edge + 1) % 6;
+                self.edge = (self.edge + 1) % EDGES;
             }
             // 60 degrees anticlockwise
             Colony::Blue => {
-                self.edge = (self.edge + 5) % 6;
+                self.edge = (self.edge + 5) % EDGES;
             }
         }
     }
 
     fn jump(&mut self) {
-        self.hexagon = (self.hexagon + self.hexagons_jumped) % 25;
+        self.hexagon = (self.hexagon + self.hexagons_jumped) % HEXAGONS;
     }
 }
 
@@ -286,12 +291,16 @@ impl Hive {
         // - [0] No change (e.g. we go from 3 them, 1 us; to 3 them, 2 us in one or two hexagons)
         let mut our_gain_their_loss: [Option<(usize, usize)>; 5] = [None; 5];
 
-        for mut hexagon_index in 0..self.hexagons.len() {
-            for mut edge_index in 0..self.hexagons[0].edges.len() {
+        for mut hexagon_index in 0..HEXAGONS {
+            // Reverse the ordering if blue.
+            if colony == Colony::Blue {
+                hexagon_index = HEXAGONS - hexagon_index - 1;
+            }
+
+            for mut edge_index in 0..EDGES {
                 // Reverse the ordering if blue.
                 if colony == Colony::Blue {
-                    hexagon_index = self.hexagons.len() - hexagon_index - 1;
-                    edge_index = self.hexagons[0].edges.len() - edge_index - 1;
+                    edge_index = EDGES - edge_index - 1;
                 }
 
                 // We only consider unowned edges.
